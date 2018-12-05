@@ -1,0 +1,32 @@
+{
+  "name": "720-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "start": "tsc --watch",
+    "test": "ts-node ./node_modules/.bin/jasmine tests/**/*"
+  },
+  "contributors": [
+    {
+      "name": "Johan Björk",
+      "email": "johan@vinnia.se"
+    },
+    {
+      "name": "Joakim Carlsten",
+      "email": "joakim@vinnia.se"
+    }
+  ],
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "src"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jasmine": "^3.3.1",
+    "typescript": "^3.2.1",
+    "jasmine": "^3.3.0",
+    "ts-node": "^7.0.1"
+  }
+}
