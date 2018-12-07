@@ -5,7 +5,8 @@
   "main": "",
   "scripts": {
     "start": "tsc --watch",
-    "test": "ts-node ./node_modules/.bin/jasmine tests/**/*"
+    "test": "ts-node ./node_modules/.bin/jasmine tests/**/*",
+    "promise-tests": "./node_modules/.bin/ts-node ./node_modules/.bin/promises-aplus-tests tests/promise-adapter"
   },
   "contributors": [
     {
@@ -25,8 +26,9 @@
   "dependencies": {},
   "devDependencies": {
     "@types/jasmine": "^3.3.1",
-    "typescript": "^3.2.1",
     "jasmine": "^3.3.0",
-    "ts-node": "^7.0.1"
+    "promises-aplus-tests": "^2.1.2",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.1"
   }
 }
