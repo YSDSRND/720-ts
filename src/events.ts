@@ -1,15 +1,16 @@
 import {Map, VariadicFunc} from './types'
 
-type EventArgumentMap = Map<any[]>
-type EventHandlerMap<TArgumentMap extends EventArgumentMap> = {
-    [K in keyof TArgumentMap]?: Array<VariadicFunc<TArgumentMap[K], void>>
+type ArgumentMap = Map<any[]>
+
+type HandlerMap<T extends ArgumentMap> = {
+    [K in keyof T]?: Array<VariadicFunc<T[K], void>>
 }
 
-export class EventEmitter<TArgumentMap extends EventArgumentMap> {
+export class EventEmitter<T extends ArgumentMap> {
 
-    private listeners: EventHandlerMap<TArgumentMap> = {}
+    private listeners: HandlerMap<T> = {}
 
-    public subscribe<TEvent extends keyof TArgumentMap>(event: TEvent, fn: VariadicFunc<TArgumentMap[TEvent], void>): void {
+    public subscribe<K extends keyof T>(event: K, fn: VariadicFunc<T[K], void>): void {
         if (!this.listeners.hasOwnProperty(event)) {
             this.listeners[event] = []
         }
@@ -17,21 +18,21 @@ export class EventEmitter<TArgumentMap extends EventArgumentMap> {
         this.listeners[event]!.push(fn)
     }
 
-    public unsubscribe<TEvent extends keyof TArgumentMap>(event: TEvent, fn: VariadicFunc<TArgumentMap[TEvent], void>): void {
+    public unsubscribe<K extends keyof T>(event: K, fn: VariadicFunc<T[K], void>): void {
         const fns = this.listeners[event]! || []
-        let idx = -1
+        let idx: number
 
         while ((idx = fns.indexOf(fn)) !== -1) {
             fns.splice(idx, 1)
         }
     }
 
-    public trigger<TEvent extends keyof TArgumentMap>(event: TEvent, ...args: TArgumentMap[TEvent]): void {
+    public trigger<K extends keyof T>(event: K, ...args: T[K]): void {
         const fns = this.listeners[event]! || []
 
         for (const fn of fns) {
             // currently we can't generically express the
-            // length of the argument array in EventArgumentMap
+            // length of the argument array in ArgumentMap
             // so we need this ugly cast for the time being.
             (fn as Function).apply(undefined, args)
         }
