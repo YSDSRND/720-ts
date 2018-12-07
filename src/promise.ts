@@ -72,6 +72,77 @@ export class Promise<T> implements PromiseLike<T> {
         this.settle(State.Rejected, value)
     }
 
+    protected addDoneHandler(onFulfill: Handler<T, any>, onReject: Handler<any, any>): void {
+        if (this.state == State.Pending) {
+            this.onFulfills.push(onFulfill)
+            this.onRejects.push(onReject)
+            return
+        }
+
+        nextTick(() => {
+            if (this.state == State.Fulfilled) {
+                onFulfill(this.value)
+                return
+            }
+            onReject(this.value)
+        })
+    }
+
+    protected createDoneHandler<U>(other: Promise<U>, handler: any, method: 'fulfill' | 'reject') {
+        return function (result: any) {
+            if (typeof handler === 'function') {
+                try {
+                    // 2.2.7.1
+                    // If either onFulfilled or onRejected returns a value x,
+                    // run the Promise Resolution Procedure [[Resolve]](promise2, x).
+                    Promise.resolve(other, handler(result))
+                }
+                catch (e) {
+                    // 2.2.7.2
+                    // If either onFulfilled or onRejected throws an exception e,
+                    // promise2 must be rejected with e as the reason.
+                    other.reject(e)
+                }
+
+                return
+            }
+            // 2.2.1.1
+            // If onFulfilled is not a function, it must be ignored.
+            // 2.2.1.2
+            // If onRejected is not a function, it must be ignored.
+            // 2.2.7.3
+            // If onFulfilled is not a function and promise1 is fulfilled,
+            // promise2 must be fulfilled with the same value as promise1.
+            // 2.2.7.4
+            // If onRejected is not a function and promise1 is rejected,
+            // promise2 must be rejected with the same reason as promise1.
+            other[method](result)
+        }
+    }
+
+    public then<U, UErr>(onFulfill?: Handler<T, U>, onReject?: Handler<any, UErr>): PromiseLike<U | UErr> {
+        // 2.2.7
+        // then must return a promise
+        const promise = new Promise<T | U | UErr>()
+
+        // 2.2.2
+        // If onFulfilled is a function:
+        // 2.2.2.1
+        // it must be called after promise is fulfilled,
+        // with promise’s value as its first argument.
+        // 2.2.3
+        // If onRejected is a function,
+        // 2.2.3.1
+        // it must be called after promise is rejected,
+        // with promise’s reason as its first argument.
+        this.addDoneHandler(
+            this.createDoneHandler(promise, onFulfill, 'fulfill'),
+            this.createDoneHandler(promise, onReject, 'reject')
+        )
+
+        return promise
+    }
+
     // 2.3
     // The Promise Resolution Procedure
     // [[Resolve]](promise, x)
@@ -150,77 +221,6 @@ export class Promise<T> implements PromiseLike<T> {
         promise.fulfill(value)
     }
 
-    protected addDoneHandler(onFulfill: Handler<T, any>, onReject: Handler<any, any>): void {
-        if (this.state == State.Pending) {
-            this.onFulfills.push(onFulfill)
-            this.onRejects.push(onReject)
-            return
-        }
-
-        nextTick(() => {
-            if (this.state == State.Fulfilled) {
-                onFulfill(this.value)
-                return
-            }
-            onReject(this.value)
-        })
-    }
-
-    protected createDoneHandler<U>(other: Promise<U>, handler: any, method: 'fulfill' | 'reject') {
-        return function (result: any) {
-            if (typeof handler === 'function') {
-                try {
-                    // 2.2.7.1
-                    // If either onFulfilled or onRejected returns a value x,
-                    // run the Promise Resolution Procedure [[Resolve]](promise2, x).
-                    Promise.resolve(other, handler(result))
-                }
-                catch (e) {
-                    // 2.2.7.2
-                    // If either onFulfilled or onRejected throws an exception e,
-                    // promise2 must be rejected with e as the reason.
-                    other.reject(e)
-                }
-
-                return
-            }
-            // 2.2.1.1
-            // If onFulfilled is not a function, it must be ignored.
-            // 2.2.1.2
-            // If onRejected is not a function, it must be ignored.
-            // 2.2.7.3
-            // If onFulfilled is not a function and promise1 is fulfilled,
-            // promise2 must be fulfilled with the same value as promise1.
-            // 2.2.7.4
-            // If onRejected is not a function and promise1 is rejected,
-            // promise2 must be rejected with the same reason as promise1.
-            other[method](result)
-        }
-    }
-
-    public then<U, UErr>(onFulfill?: Handler<T, U>, onReject?: Handler<any, UErr>): PromiseLike<U | UErr> {
-        // 2.2.7
-        // then must return a promise
-        const promise = new Promise<T | U | UErr>()
-
-        // 2.2.2
-        // If onFulfilled is a function:
-        // 2.2.2.1
-        // it must be called after promise is fulfilled,
-        // with promise’s value as its first argument.
-        // 2.2.3
-        // If onRejected is a function,
-        // 2.2.3.1
-        // it must be called after promise is rejected,
-        // with promise’s reason as its first argument.
-        this.addDoneHandler(
-            this.createDoneHandler(promise, onFulfill, 'fulfill'),
-            this.createDoneHandler(promise, onReject, 'reject')
-        )
-
-        return promise
-    }
-
     public static fulfilled<T>(value: T): PromiseLike<T> {
         return new Promise((resolve, reject) => {
             resolve(value)
@@ -264,7 +264,7 @@ export class Promise<T> implements PromiseLike<T> {
         promises: [PromiseLike<T1>, PromiseLike<T2>, PromiseLike<T3>, PromiseLike<T4>, PromiseLike<T5>, PromiseLike<T6>, PromiseLike<T7>]
     ): PromiseLike<[T1, T2, T3, T4, T5, T6, T7]>;
 
-    public static all<T>(promises: Array<PromiseLike<T>>): PromiseLike<Array<T>>;
+    public static all<T>(promises: ReadonlyArray<PromiseLike<T>>): PromiseLike<ReadonlyArray<T>>;
 
     public static all(promises: ReadonlyArray<PromiseLike<any>>): PromiseLike<ReadonlyArray<any>> {
         return new Promise((resolve, reject) => {

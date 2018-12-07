@@ -26,7 +26,7 @@ describe('promise tests', function () {
         })
     })
 
-    it('when should wait for all promises to resolve', function (done) {
+    it('Promise.all should wait for all promises to resolve', function (done) {
         const a = new Promise<number>((resolve, reject) => {
             setTimeout(function () {
                 resolve(100)
@@ -40,6 +40,20 @@ describe('promise tests', function () {
 
         Promise.all([a, b]).then(results => {
             expect(results).toEqual([100, 'yee'])
+            done()
+        })
+    })
+
+    it('Promise.when should work correctly with scalars', function (done) {
+        Promise.when(1).then(res => {
+            expect(res).toBe(1)
+            done()
+        })
+    })
+
+    it('Promise.when should work correctly with promise like structures', function (done) {
+        Promise.when(Promise.fulfilled(1)).then(res => {
+            expect(res).toBe(1)
             done()
         })
     })
