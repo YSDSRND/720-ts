@@ -44,15 +44,15 @@ describe('promise tests', function () {
         })
     })
 
-    it('Promise.when should work correctly with scalars', function (done) {
-        Promise.when(1).then(res => {
+    it('Promise.resolve should work correctly with scalars', function (done) {
+        Promise.resolve(1).then(res => {
             expect(res).toBe(1)
             done()
         })
     })
 
-    it('Promise.when should work correctly with promise like structures', function (done) {
-        Promise.when(Promise.fulfilled(1)).then(res => {
+    it('Promise.resolve should work correctly with promise like structures', function (done) {
+        Promise.resolve(Promise.resolve(1)).then(res => {
             expect(res).toBe(1)
             done()
         })

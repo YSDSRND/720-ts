@@ -95,7 +95,7 @@ export class Promise<T> implements PromiseLike<T> {
                     // 2.2.7.1
                     // If either onFulfilled or onRejected returns a value x,
                     // run the Promise Resolution Procedure [[Resolve]](promise2, x).
-                    Promise.resolve(other, handler(result))
+                    Promise.executeResolutionProcedure(other, handler(result))
                 }
                 catch (e) {
                     // 2.2.7.2
@@ -146,7 +146,7 @@ export class Promise<T> implements PromiseLike<T> {
     // 2.3
     // The Promise Resolution Procedure
     // [[Resolve]](promise, x)
-    protected static resolve<T>(promise: Promise<T>, value: any) {
+    protected static executeResolutionProcedure<T>(promise: Promise<T>, value: any) {
         // 2.3.1
         // If promise and x refer to the same object,
         // reject promise with a TypeError as the reason.
@@ -183,7 +183,7 @@ export class Promise<T> implements PromiseLike<T> {
                         // run [[Resolve]](promise, y).
                         if (!called) {
                             called = true
-                            Promise.resolve(promise, y)
+                            Promise.executeResolutionProcedure(promise, y)
                         }
                     }, function (reason: any) {
                         // 2.3.3.3.2
@@ -221,23 +221,19 @@ export class Promise<T> implements PromiseLike<T> {
         promise.fulfill(value)
     }
 
-    public static fulfilled<T>(value: T): PromiseLike<T> {
-        return new Promise((resolve, reject) => {
-            resolve(value)
-        })
-    }
-
-    public static rejected<T>(reason: any): PromiseLike<T> {
-        return new Promise((resolve, reject) => {
-            reject(reason)
-        })
-    }
-
-    public static when<T>(maybePromise: T | PromiseLike<T>): PromiseLike<T> {
+    public static resolve<T>(maybePromise: T | PromiseLike<T>): PromiseLike<T> {
         if (isPromiseLike(maybePromise)) {
             return maybePromise
         }
-        return Promise.fulfilled(maybePromise)
+        return new Promise((resolve, reject) => {
+            resolve(maybePromise)
+        })
+    }
+
+    public static reject<T>(reason: any): PromiseLike<T> {
+        return new Promise((resolve, reject) => {
+            reject(reason)
+        })
     }
 
     public static all<T1, T2>(

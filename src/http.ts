@@ -122,7 +122,7 @@ export class MockBackend implements Backend {
 
         const handler = this.handlers.shift()
 
-        return Promise.fulfilled(handler!(request))
+        return Promise.resolve(handler!(request))
     }
 
 }
@@ -145,9 +145,9 @@ export class HttpClient {
 
         return this.backend.send(req).then(res => {
             if (res.status >= 200 && res.status < 400) {
-                return Promise.fulfilled(res)
+                return Promise.resolve(res)
             }
-            return Promise.rejected<Response>(res)
+            return Promise.reject<Response>(res)
         })
     }
 
