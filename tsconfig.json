@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "noEmit": true,
     "noErrorTruncation": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
