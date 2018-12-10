@@ -1,6 +1,6 @@
 import {HttpClient, MockBackend, XMLHttpRequestBackend} from "../src/http"
 
-describe('XMLHttpRequestBackend tests', function () {
+describe('HttpClient tests', function () {
 
     let backend: MockBackend
     let client: HttpClient
