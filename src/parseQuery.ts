@@ -1,6 +1,6 @@
-import {Map} from "./types";
+import {Map, ReadonlyMap} from "./types";
 
-export function parseQuery(value: string): Map<string | undefined> {
+export function parseQuery(value: string): ReadonlyMap<string | undefined> {
     const out: Map<string | undefined> = {}
     const regex = /([^&?=]+)(?:=([^&?=]+))?/g
     let matches: RegExpMatchArray | null
