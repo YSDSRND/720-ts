@@ -21,3 +21,5 @@ jobs:
       - run: npm run-script test-junit
       - store_test_results:
           path: junit/
+      - store_artifacts:
+          path: junit/
