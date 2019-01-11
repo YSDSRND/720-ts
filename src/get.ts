@@ -4,14 +4,14 @@ export function get<T>(item: any, path: string): T | undefined {
         .replace(/\]$/, '') // remove ending bracket
         .replace(/\]?\[/g, '.') // replace brackets with dots
         .split('.')
-    
+
     let slice = item
     let part
     while ((part = parts.shift()) !== undefined) {
-        slice = slice[part]
-        if (!slice) {
+        if (!Object.prototype.hasOwnProperty.call(slice, part)) {
             return undefined
         }
+        slice = slice[part]
     }
     return slice
 }

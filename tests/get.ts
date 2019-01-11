@@ -36,4 +36,11 @@ describe('get tests', function () {
         expect(get<string>(item, '[0][0][0]')).toBe('yee')
     })
 
+    it('should return falsy values', function () {
+        const item = {
+            yee: false,
+        }
+        expect(get<boolean>(item, 'yee')).toBe(false)
+    })
+
 })
