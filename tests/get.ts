@@ -20,6 +20,20 @@ describe('get tests', function () {
 
     it('should return undefined when path does not exist', function () {
         expect(get(item, 'other_boi')).toBeUndefined()
-    });
+    })
+
+    it('should work with bracket path', function () {
+        expect(get<number>(item, 'yee[boi]')).toBe(1)
+    })
+
+    it('should work with deep bracket path', function () {
+        const item = [[['yee']]]
+        expect(get<string>(item, '0[0][0]')).toBe('yee')
+    })
+
+    it('should work when path starts with bracket', function () {
+        const item = [[['yee']]]
+        expect(get<string>(item, '[0][0][0]')).toBe('yee')
+    })
 
 })

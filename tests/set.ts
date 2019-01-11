@@ -32,4 +32,14 @@ describe('set tests', function () {
         })
     })
 
+    it('should work with bracket path', function () {
+        const item = {}
+        set(item, 'yee[boi]', 1)
+        expect(item).toEqual({
+            yee: {
+                boi: 1,
+            },
+        })
+    })
+
 })
