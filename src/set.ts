@@ -15,7 +15,7 @@ export function set(item: any, path: string, value: any): void {
         if (!Object.prototype.hasOwnProperty.call(slice, part)) {
             slice[part] = {}
         }
-        
+
         slice = slice[part]
     }
 

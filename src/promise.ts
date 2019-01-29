@@ -89,15 +89,14 @@ export class Promise<T> implements PromiseLike<T> {
     }
 
     protected createDoneHandler<U>(other: Promise<U>, handler: any, method: 'fulfill' | 'reject') {
-        return function (result: any) {
+        return function(result: any) {
             if (typeof handler === 'function') {
                 try {
                     // 2.2.7.1
                     // If either onFulfilled or onRejected returns a value x,
                     // run the Promise Resolution Procedure [[Resolve]](promise2, x).
                     Promise.executeResolutionProcedure(other, handler(result))
-                }
-                catch (e) {
+                } catch (e) {
                     // 2.2.7.2
                     // If either onFulfilled or onRejected throws an exception e,
                     // promise2 must be rejected with e as the reason.
@@ -169,7 +168,7 @@ export class Promise<T> implements PromiseLike<T> {
             try {
                 // 2.3.3.1
                 // Let then be x.then.
-                let then: ThenFunction<T> = value.then
+                const then: ThenFunction<T> = value.then
 
                 if (typeof then === 'function') {
                     // 2.3.3.3
@@ -177,7 +176,7 @@ export class Promise<T> implements PromiseLike<T> {
                     // call it with x as this,
                     // first argument resolvePromise,
                     // and second argument rejectPromise,
-                    then.call(value, function (y: T) {
+                    then.call(value, function(y: T) {
                         // 2.3.3.3.1
                         // If/when resolvePromise is called with a value y,
                         // run [[Resolve]](promise, y).
@@ -185,7 +184,7 @@ export class Promise<T> implements PromiseLike<T> {
                             called = true
                             Promise.executeResolutionProcedure(promise, y)
                         }
-                    }, function (reason: any) {
+                    }, function(reason: any) {
                         // 2.3.3.3.2
                         // If/when rejectPromise is called with a reason r,
                         // reject promise with r.

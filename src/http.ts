@@ -95,7 +95,7 @@ export class XMLHttpRequestBackend implements Backend {
         request.body = request.body || ''
 
         return new Promise((resolve, reject) => {
-            const req = new XMLHttpRequest
+            const req = new XMLHttpRequest()
             this.attachHandlers(req, resolve, reject)
 
             req.open(request.method, this.buildUrlWithParameters(request.url, request.query!), true)

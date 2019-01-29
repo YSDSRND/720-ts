@@ -7,7 +7,9 @@
     "start": "tsc --watch --noEmit",
     "test": "karma start --single-run",
     "test-junit": "karma start --single-run --reporters junit",
-    "promise-tests": ""
+    "promise-tests": "",
+    "tslint": "tslint --format verbose \"src/**/*.{ts,tsx}\"",
+    "tslint-fix": "tslint --fix \"src/**/*.{ts,tsx}\""
   },
   "contributors": [
     {
@@ -34,6 +36,7 @@
     "karma-junit-reporter": "^1.2.0",
     "karma-typescript": "^3.0.13",
     "promises-aplus-tests": "^2.1.2",
+    "tslint": "^5.12.1",
     "typescript": "^3.2.1"
   }
 }

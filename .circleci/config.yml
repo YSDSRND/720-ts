@@ -18,7 +18,7 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package-lock.json" }}
-      - run: npm run-script test-junit
+      - run: ./run_tests_and_report.sh
       - store_test_results:
           path: junit/
       - store_artifacts:
