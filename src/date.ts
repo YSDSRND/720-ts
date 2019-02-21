@@ -14,6 +14,10 @@ export interface DateFormatConverterInterface {
     convert(from: string): string
 }
 
+export interface DateParserInterface {
+    parse(value: string, format: string): YSDSDate | undefined
+}
+
 const getterMap = {
     [DateComponent.Year]: Date.prototype.getFullYear,
     [DateComponent.Month]: function(this: Date) {
@@ -109,6 +113,10 @@ export class YSDSDate {
         return YSDSDate.fromDate(new Date())
     }
 
+    public static parse(value: string, format: string): YSDSDate | undefined {
+        return unicodeParser.parse(value, format)
+    }
+
     public toDate(): Date {
         return new Date(this.backend.getTime())
     }
@@ -195,6 +203,59 @@ export class ReplacementConverter implements DateFormatConverterInterface {
     }
 
 }
+
+export class PatternParser implements DateParserInterface {
+
+    protected readonly patterns: ReadonlyMap<[string, DateComponent]>
+
+    constructor(patterns: ReadonlyMap<[string, DateComponent]>) {
+        this.patterns = patterns
+    }
+
+    protected buildMatchingSequence(format: string): [RegExp, ReadonlyArray<DateComponent>] {
+        // build a regex containing all formatting descriptors
+        const formatRegex = Object.keys(this.patterns).join('|')
+
+        // using the formatting descriptors we construct a new
+        // regex with the actual date matching patterns. we also
+        // save the matching date component so we can keep track
+        // of which part of the date to change with the match.
+        const components: Array<DateComponent> = []
+        const dateRegex = format.replace(new RegExp(formatRegex, 'g'), match => {
+            const p = this.patterns[match]
+            components.push(p[1])
+            return `(${p[0]})`
+        })
+        return [new RegExp(dateRegex), components]
+    }
+
+    public parse(value: string, format: string): YSDSDate | undefined {
+        const seq = this.buildMatchingSequence(format)
+        const matches = seq[0].exec(value)
+
+        if (matches === null) {
+            return undefined
+        }
+
+        let dt = YSDSDate.now()
+
+        for (let i = 1; i < matches.length; i++) {
+            const component = seq[1][i - 1]
+            dt = dt.withComponent(component, parseInt(matches[i]))
+        }
+
+        return dt
+    }
+}
+
+export const unicodeParser = new PatternParser({
+    yyyy: ['\\d{4}', DateComponent.Year],
+    MM: ['\\d{2}', DateComponent.Month],
+    dd: ['\\d{2}', DateComponent.Date],
+    HH: ['\\d{2}', DateComponent.Hour],
+    mm: ['\\d{2}', DateComponent.Minute],
+    ss: ['\\d{2}', DateComponent.Second],
+})
 
 // http://unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
 export const unicodeFormatter = new ReplacementFormatter({

@@ -1,4 +1,11 @@
-import {DateComponent, ReplacementConverter, ReplacementFormatter, YSDSDate} from "../src/date";
+import {
+    DateComponent,
+    DateParserInterface,
+    PatternParser,
+    ReplacementConverter,
+    ReplacementFormatter,
+    YSDSDate
+} from "../src/date";
 
 describe('YSDSDate tests', function () {
 
@@ -160,4 +167,43 @@ describe('ReplacementFormatter tests', () => {
         expect(formatter.format(new Date(), 'yyyy-MM')).toBe('1000-500')
     })
 
+})
+
+describe('PatternParser tests', function() {
+    let parser: DateParserInterface
+
+    beforeEach(function () {
+        parser = new PatternParser({
+            yyyy: ['\\d{4}', DateComponent.Year],
+            MM: ['\\d{2}', DateComponent.Month],
+            dd: ['\\d{2}', DateComponent.Date],
+            HH: ['\\d{2}', DateComponent.Hour],
+            mm: ['\\d{2}', DateComponent.Minute],
+            ss: ['\\d{2}', DateComponent.Second],
+        })
+    })
+
+    it('should parse correctly', function() {
+        const dt = parser.parse('2014-05-06 12:30:45', 'yyyy-MM-dd HH:mm:ss')!
+        expect(dt).toBeTruthy()
+        expect(dt.year).toBe(2014)
+        expect(dt.month).toBe(5)
+        expect(dt.date).toBe(6)
+        expect(dt.hour).toBe(12)
+        expect(dt.minute).toBe(30)
+        expect(dt.second).toBe(45)
+    })
+
+    it('should ignore non-matching characters', function() {
+        const dt = parser.parse('2014-03-02T06:03:04', 'yyyy-MM-dd')!
+        expect(dt).toBeTruthy()
+        expect(dt.year).toBe(2014)
+        expect(dt.month).toBe(3)
+        expect(dt.date).toBe(2)
+    })
+
+    it('should return undefined on non-matching pattern', function() {
+        const dt = parser.parse('2019-01', 'yyyy-MM-dd')
+        expect(dt).toBeUndefined()
+    })
 })
