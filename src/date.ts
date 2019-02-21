@@ -1,9 +1,9 @@
 import {padLeft} from "./pad";
-import {Map, Func1, ReadonlyMap} from "./types";
+import {Func1, ReadonlyMap, StringLike} from "./types";
 import {flip} from "./flip";
 
 export const enum DateComponent {
-    Year, Month, Date, Hour, Minute, Second, Milliseconds,
+    Year, Month, Date, Hour, Minute, Second, Millisecond,
 }
 
 export interface DateFormatterInterface {
@@ -16,19 +16,19 @@ export interface DateFormatConverterInterface {
 
 const getterMap = {
     [DateComponent.Year]: Date.prototype.getFullYear,
-    [DateComponent.Month]: function (this: Date) {
+    [DateComponent.Month]: function(this: Date) {
         return this.getMonth() + 1
     },
     [DateComponent.Date]: Date.prototype.getDate,
     [DateComponent.Hour]: Date.prototype.getHours,
     [DateComponent.Minute]: Date.prototype.getMinutes,
     [DateComponent.Second]: Date.prototype.getSeconds,
-    [DateComponent.Milliseconds]: Date.prototype.getMilliseconds,
+    [DateComponent.Millisecond]: Date.prototype.getMilliseconds,
 }
 
 const setterMap = {
     [DateComponent.Year]: Date.prototype.setFullYear,
-    [DateComponent.Month]: function (this: Date, value: number) {
+    [DateComponent.Month]: function(this: Date, value: number) {
         const prevDate = this.getDate()
         this.setMonth(value - 1)
 
@@ -46,10 +46,11 @@ const setterMap = {
     [DateComponent.Hour]: Date.prototype.setHours,
     [DateComponent.Minute]: Date.prototype.setMinutes,
     [DateComponent.Second]: Date.prototype.setSeconds,
-    [DateComponent.Milliseconds]: Date.prototype.setMilliseconds,
+    [DateComponent.Millisecond]: Date.prototype.setMilliseconds,
 }
 
 export class YSDSDate {
+
     protected readonly backend: Date
 
     public get year(): number {
@@ -76,8 +77,8 @@ export class YSDSDate {
         return this.getComponent(DateComponent.Second)
     }
 
-    public get milliseconds(): number {
-        return this.getComponent(DateComponent.Milliseconds)
+    public get millisecond(): number {
+        return this.getComponent(DateComponent.Millisecond)
     }
 
     constructor(
@@ -87,9 +88,9 @@ export class YSDSDate {
         hour: number = 0,
         minute: number = 0,
         second: number = 0,
-        milliseconds: number = 0
+        millisecond: number = 0
     ) {
-        this.backend = new Date(year, month - 1, date, hour, minute, second, milliseconds)
+        this.backend = new Date(year, month - 1, date, hour, minute, second, millisecond)
     }
 
     public static fromDate(date: Date): YSDSDate {
@@ -136,10 +137,10 @@ export class YSDSDate {
 // using a map of patterns.
 export class ReplacementFormatter implements DateFormatterInterface {
 
-    protected replacements: Map<Func1<YSDSDate, string | number>>
+    protected replacements: ReadonlyMap<Func1<YSDSDate, StringLike>>
     protected regexp: RegExp
 
-    constructor(replacements: Map<Func1<YSDSDate, string | number>>) {
+    constructor(replacements: ReadonlyMap<Func1<YSDSDate, StringLike>>) {
         this.replacements = replacements
         this.regexp = new RegExp(Object.keys(this.replacements).join('|'), 'g')
     }
@@ -169,7 +170,7 @@ export class ReplacementConverter implements DateFormatConverterInterface {
         // replaced first. if we don't do this we might end up
         // with weird cases where 'yy' with replacements { y: '1', yy: '2' }
         // gets converted into '11', where it should be '2'.
-        const keys = Object.keys(this.replacements).sort((a, b) => {
+        const keys = Object.keys(this.replacements).sort(function(a, b) {
             const lenA = a.length
             const lenB = b.length
             if (lenA === lenB) {
@@ -182,7 +183,9 @@ export class ReplacementConverter implements DateFormatConverterInterface {
     }
 
     public convert(from: string): string {
-        return from.replace(this.regexp, match => this.replacements[match])
+        return from.replace(this.regexp, match => {
+            return this.replacements[match]
+        })
     }
 
     public reversed(): DateFormatConverterInterface {
@@ -221,7 +224,6 @@ export const phpFormatter: DateFormatterInterface = {
         return unicodeFormatter.format(date, format)
     },
 }
-
 
 // http://php.net/manual/en/function.date.php
 // bootstrap format extracted from "bootstrap-datepicker.js"
