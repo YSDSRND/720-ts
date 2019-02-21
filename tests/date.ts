@@ -206,4 +206,14 @@ describe('PatternParser tests', function() {
         const dt = parser.parse('2019-01', 'yyyy-MM-dd')
         expect(dt).toBeUndefined()
     })
+
+    it('should parse correctly from cache', function() {
+        parser.parse('2018-01-01', 'yyyy-MM-dd')
+
+        const dt = parser.parse('2017-02-03', 'yyyy-MM-dd')!
+        expect(dt).toBeTruthy()
+        expect(dt.year).toBe(2017)
+        expect(dt.month).toBe(2)
+        expect(dt.date).toBe(3)
+    })
 })

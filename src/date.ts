@@ -1,5 +1,5 @@
 import {padLeft} from "./pad";
-import {Func1, ReadonlyMap, StringLike} from "./types";
+import {Func1, Map, ReadonlyMap, StringLike} from "./types";
 import {flip} from "./flip";
 
 export const enum DateComponent {
@@ -207,26 +207,30 @@ export class ReplacementConverter implements DateFormatConverterInterface {
 export class PatternParser implements DateParserInterface {
 
     protected readonly patterns: ReadonlyMap<[string, DateComponent]>
+    protected readonly cache: Map<[RegExp, ReadonlyArray<DateComponent>]> = {}
 
     constructor(patterns: ReadonlyMap<[string, DateComponent]>) {
         this.patterns = patterns
     }
 
     protected buildMatchingSequence(format: string): [RegExp, ReadonlyArray<DateComponent>] {
-        // build a regex containing all formatting descriptors
-        const formatRegex = Object.keys(this.patterns).join('|')
+        if (!this.cache.hasOwnProperty(format)) {
+            // build a regex containing all formatting descriptors
+            const formatRegex = Object.keys(this.patterns).join('|')
 
-        // using the formatting descriptors we construct a new
-        // regex with the actual date matching patterns. we also
-        // save the matching date component so we can keep track
-        // of which part of the date to change with the match.
-        const components: Array<DateComponent> = []
-        const dateRegex = format.replace(new RegExp(formatRegex, 'g'), match => {
-            const p = this.patterns[match]
-            components.push(p[1])
-            return `(${p[0]})`
-        })
-        return [new RegExp(dateRegex), components]
+            // using the formatting descriptors we construct a new
+            // regex with the actual date matching patterns. we also
+            // save the matching date component so we can keep track
+            // of which part of the date to change with the match.
+            const components: Array<DateComponent> = []
+            const dateRegex = format.replace(new RegExp(formatRegex, 'g'), match => {
+                const p = this.patterns[match]
+                components.push(p[1])
+                return `(${p[0]})`
+            })
+            this.cache[format] = [new RegExp(dateRegex), components]
+        }
+        return this.cache[format]
     }
 
     public parse(value: string, format: string): YSDSDate | undefined {
@@ -237,14 +241,15 @@ export class PatternParser implements DateParserInterface {
             return undefined
         }
 
-        let dt = YSDSDate.now()
+        const dt = new Date()
 
         for (let i = 1; i < matches.length; i++) {
             const component = seq[1][i - 1]
-            dt = dt.withComponent(component, parseInt(matches[i]))
+            const fn = setterMap[component] as (this: Date, value: number) => void
+            fn.call(dt, parseInt(matches[i]))
         }
 
-        return dt
+        return YSDSDate.fromDate(dt)
     }
 }
 
