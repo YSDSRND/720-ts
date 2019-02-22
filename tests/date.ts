@@ -3,7 +3,7 @@ import {
     DateParserInterface,
     PatternParser,
     ReplacementConverter,
-    ReplacementFormatter,
+    ReplacementFormatter, unicodeFormatter,
     YSDSDate
 } from "../src/date";
 
@@ -215,5 +215,46 @@ describe('PatternParser tests', function() {
         expect(dt.year).toBe(2017)
         expect(dt.month).toBe(2)
         expect(dt.date).toBe(3)
+    })
+})
+
+describe('unicodeFormatter tests', function() {
+    const dt = new YSDSDate(2015, 3, 4, 5, 6, 7)
+
+    const formats = [
+        ['yyyy', '2015'],
+        ['yy', '15'],
+        ['MM', '03'],
+        ['M', '3'],
+        ['dd', '04'],
+        ['d', '4'],
+        ['HH', '05'],
+        ['h', '5'],
+        ['hh', '05'],
+        ['mm', '06'],
+        ['ss', '07'],
+        ['a', 'am'],
+        ['yyyy-MM-dd', '2015-03-04'],
+        ['HH:mm:ss a', '05:06:07 am'],
+    ]
+
+    for (let i = 0; i < formats.length; ++i) {
+        const fmt = formats[i]
+        it(`should format correctly ${i}`, function() {
+            expect(unicodeFormatter.format(dt, fmt[0])).toBe(fmt[1])
+        })
+    }
+
+    it('should format timezone correctly', function() {
+        const pattern = /[+-]\d{4}/
+        expect(pattern.test(unicodeFormatter.format(dt, 'xx'))).toBe(true)
+    })
+
+    it('should format 12-hour clock correctly', function() {
+        expect(unicodeFormatter.format(new YSDSDate(2000, 1, 1, 0, 0, 0), 'h')).toBe('12')
+        expect(unicodeFormatter.format(new YSDSDate(2000, 1, 1, 1, 0, 0), 'h')).toBe('1')
+        expect(unicodeFormatter.format(new YSDSDate(2000, 1, 1, 12, 0, 0), 'h')).toBe('12')
+        expect(unicodeFormatter.format(new YSDSDate(2000, 1, 1, 13, 0, 0), 'h')).toBe('1')
+        expect(unicodeFormatter.format(new YSDSDate(2000, 1, 1, 16, 0, 0), 'h')).toBe('4')
     })
 })

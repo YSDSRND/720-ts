@@ -1,6 +1,5 @@
 import {padLeft} from "./pad";
 import {Func1, Map, ReadonlyMap, StringLike} from "./types";
-import {flip} from "./flip";
 
 export const enum DateComponent {
     Year, Month, Date, Hour, Minute, Second, Millisecond,
@@ -195,13 +194,6 @@ export class ReplacementConverter implements DateFormatConverterInterface {
             return this.replacements[match]
         })
     }
-
-    public reversed(): DateFormatConverterInterface {
-        return new ReplacementConverter(
-            flip(this.replacements)
-        )
-    }
-
 }
 
 export class PatternParser implements DateParserInterface {
@@ -262,6 +254,11 @@ export const unicodeParser = new PatternParser({
     ss: ['\\d{2}', DateComponent.Second],
 })
 
+const twelveHourClockHours = [
+    12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+    12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+]
+
 // http://unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
 export const unicodeFormatter = new ReplacementFormatter({
     yyyy: date => date.year,
@@ -269,6 +266,8 @@ export const unicodeFormatter = new ReplacementFormatter({
     MM: date => padLeft(date.month.toString(), 2, '0'),
     dd: date => padLeft(date.date.toString(), 2, '0'),
     HH: date => padLeft(date.hour.toString(), 2, '0'),
+    hh: date => padLeft(twelveHourClockHours[date.hour].toString(), 2, '0'),
+    h: date => twelveHourClockHours[date.hour],
     mm: date => padLeft(date.minute.toString(), 2, '0'),
     ss: date => padLeft(date.second.toString(), 2, '0'),
     d: date => date.date,
@@ -282,6 +281,7 @@ export const unicodeFormatter = new ReplacementFormatter({
             padLeft(hours.toString(), 2, '0') +
             padLeft(minutes.toString(), 2, '0')
     },
+    a: date => date.hour < 12 ? 'am' : 'pm',
 })
 
 export const phpFormatter: DateFormatterInterface = {
