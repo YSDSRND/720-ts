@@ -75,11 +75,21 @@ describe('YSDSDate tests', function () {
         })
     }
 
-    it('should parse ISO-like formats natively', function() {
+    it('should parse ISO-like dates natively', function() {
         const dt = YSDSDate.parse('2018-04-05T06:00:00Z')!
         expect(dt.year).toBe(2018)
         expect(dt.month).toBe(4)
         expect(dt.date).toBe(5)
+    })
+
+    it('should not ignore format because of ISO-like date', function() {
+        const dt = YSDSDate.parse('2018-01-01', 'yee-boi')
+        expect(dt).toBeUndefined()
+    })
+
+    it('should return undefined on invalid dates', function () {
+        const dt = YSDSDate.parse('2018-01-01YEEEEEEEEEEEEEE')
+        expect(dt).toBeUndefined()
     })
 })
 

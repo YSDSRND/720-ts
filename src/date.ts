@@ -117,8 +117,14 @@ export class YSDSDate {
     }
 
     public static parse(value: string, format?: string): YSDSDate | undefined {
-        if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
-            return YSDSDate.fromDate(new Date(value))
+        if (typeof format === 'undefined' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+            const dt = new Date(value)
+
+            if (isNaN(dt.getTime())) {
+                return undefined
+            }
+
+            return YSDSDate.fromDate(dt)
         }
 
         return unicodeParser.parse(value, format || 'yyyy-MM-dd HH:mm:ss')
