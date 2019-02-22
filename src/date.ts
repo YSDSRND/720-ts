@@ -116,8 +116,12 @@ export class YSDSDate {
         return YSDSDate.fromDate(new Date())
     }
 
-    public static parse(value: string, format: string): YSDSDate | undefined {
-        return unicodeParser.parse(value, format)
+    public static parse(value: string, format?: string): YSDSDate | undefined {
+        if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
+            return YSDSDate.fromDate(new Date(value))
+        }
+
+        return unicodeParser.parse(value, format || 'yyyy-MM-dd HH:mm:ss')
     }
 
     public toDate(): Date {

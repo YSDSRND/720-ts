@@ -74,6 +74,13 @@ describe('YSDSDate tests', function () {
             expect(added.date).toBe(data[7])
         })
     }
+
+    it('should parse ISO-like formats natively', function() {
+        const dt = YSDSDate.parse('2018-04-05T06:00:00Z')!
+        expect(dt.year).toBe(2018)
+        expect(dt.month).toBe(4)
+        expect(dt.date).toBe(5)
+    })
 })
 
 describe('replacement converter tests', () => {
