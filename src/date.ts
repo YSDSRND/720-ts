@@ -84,6 +84,10 @@ export class YSDSDate {
         return this.getComponent(DateComponent.Millisecond)
     }
 
+    public get timezoneOffset(): number {
+        return this.backend.getTimezoneOffset()
+    }
+
     constructor(
         year: number,
         month: number,
@@ -128,7 +132,7 @@ export class YSDSDate {
     }
 
     public getComponent(component: DateComponent): number {
-        return getterMap[component].call(this.toDate())
+        return getterMap[component].call(this.backend)
     }
 
     public add(component: DateComponent, value: number): YSDSDate {
@@ -273,7 +277,7 @@ export const unicodeFormatter = new ReplacementFormatter({
     d: date => date.date,
     M: date => date.month,
     xx: date => {
-        const offset = date.toDate().getTimezoneOffset()
+        const offset = date.timezoneOffset
         const sign = offset <= 0 ? '+' : '-'
         const hours = Math.floor(Math.abs(offset) / 60)
         const minutes = Math.abs(offset) % 60
