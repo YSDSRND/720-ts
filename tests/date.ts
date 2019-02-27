@@ -263,8 +263,8 @@ describe('unicodeFormatter tests', function() {
     }
 
     it('should format timezone correctly', function() {
-        const pattern = /[+-]\d{4}/
-        expect(pattern.test(unicodeFormatter.format(dt, 'xx'))).toBe(true)
+        const pattern = /[+-]\d{4} [+-]\d{2}:\d{2}/
+        expect(pattern.test(unicodeFormatter.format(dt, 'xx xxx'))).toBe(true)
     })
 
     it('should format 12-hour clock correctly', function() {

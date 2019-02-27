@@ -1,5 +1,6 @@
 import {padLeft} from "./pad";
-import {Func1, Map, ReadonlyMap, StringLike} from "./types";
+import {Func2, Map, ReadonlyMap, StringLike} from "./types";
+import {orderByWithComparator} from "./orderBy";
 
 export const enum DateComponent {
     Year, Month, Date, Hour, Minute, Second, Millisecond,
@@ -15,6 +16,17 @@ export interface DateFormatConverterInterface {
 
 export interface DateParserInterface {
     parse(value: string, format: string): YSDSDate | undefined
+}
+
+function orderDescendingByLength(items: ArrayLike<string>): ReadonlyArray<string> {
+    return orderByWithComparator(items, (a, b) => {
+        const lenA = a.length
+        const lenB = b.length
+        if (lenA === lenB) {
+            return 0
+        }
+        return lenA > lenB ? -1 : 1
+    })
 }
 
 const getterMap = {
@@ -158,12 +170,14 @@ export class YSDSDate {
 // using a map of patterns.
 export class ReplacementFormatter implements DateFormatterInterface {
 
-    protected replacements: ReadonlyMap<Func1<YSDSDate, StringLike>>
+    protected replacements: ReadonlyMap<Func2<YSDSDate, DateFormatterInterface, StringLike>>
     protected regexp: RegExp
 
-    constructor(replacements: ReadonlyMap<Func1<YSDSDate, StringLike>>) {
+    constructor(replacements: ReadonlyMap<Func2<YSDSDate, DateFormatterInterface, StringLike>>) {
         this.replacements = replacements
-        this.regexp = new RegExp(Object.keys(this.replacements).join('|'), 'g')
+        this.regexp = new RegExp(
+            orderDescendingByLength(Object.keys(this.replacements)).join('|'), 'g'
+        )
     }
 
     public format(date: YSDSDate | Date, format: string): string {
@@ -171,7 +185,7 @@ export class ReplacementFormatter implements DateFormatterInterface {
             date = YSDSDate.fromDate(date)
         }
         return format.replace(this.regexp, match => {
-            return this.replacements[match](date as YSDSDate).toString()
+            return this.replacements[match](date as YSDSDate, this).toString()
         })
     }
 }
@@ -191,16 +205,9 @@ export class ReplacementConverter implements DateFormatConverterInterface {
         // replaced first. if we don't do this we might end up
         // with weird cases where 'yy' with replacements { y: '1', yy: '2' }
         // gets converted into '11', where it should be '2'.
-        const keys = Object.keys(this.replacements).sort(function(a, b) {
-            const lenA = a.length
-            const lenB = b.length
-            if (lenA === lenB) {
-                return 0
-            }
-            return lenA > lenB ? -1 : 1
-        })
-
-        this.regexp = new RegExp(keys.join('|'), 'g')
+        this.regexp = new RegExp(
+            orderDescendingByLength(Object.keys(replacements)).join('|'), 'g'
+        )
     }
 
     public convert(from: string): string {
@@ -222,7 +229,7 @@ export class PatternParser implements DateParserInterface {
     protected buildMatchingSequence(format: string): [RegExp, ReadonlyArray<DateComponent>] {
         if (!this.cache.hasOwnProperty(format)) {
             // build a regex containing all formatting descriptors
-            const formatRegex = Object.keys(this.patterns).join('|')
+            const formatRegex = orderDescendingByLength(Object.keys(this.patterns)).join('|')
 
             // using the formatting descriptors we construct a new
             // regex with the actual date matching patterns. we also
@@ -286,14 +293,18 @@ export const unicodeFormatter = new ReplacementFormatter({
     ss: date => padLeft(date.second.toString(), 2, '0'),
     d: date => date.date,
     M: date => date.month,
-    xx: date => {
+    xxx: date => {
         const offset = date.timezoneOffset
         const sign = offset <= 0 ? '+' : '-'
         const hours = Math.floor(Math.abs(offset) / 60)
         const minutes = Math.abs(offset) % 60
         return sign +
             padLeft(hours.toString(), 2, '0') +
+            ':' +
             padLeft(minutes.toString(), 2, '0')
+    },
+    xx: (date, fmt) => {
+        return fmt.format(date, 'xxx').replace(':', '')
     },
     a: date => date.hour < 12 ? 'am' : 'pm',
 })
