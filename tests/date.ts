@@ -82,6 +82,13 @@ describe('YSDSDate tests', function () {
         expect(dt.date).toBe(5)
     })
 
+    it('should parse mysql-like dates natively', function () {
+        const dt = YSDSDate.parse('2018-04-05 06:00:00')!
+        expect(dt.year).toBe(2018)
+        expect(dt.month).toBe(4)
+        expect(dt.date).toBe(5)
+    })
+
     it('should not ignore format because of ISO-like date', function() {
         const dt = YSDSDate.parse('2018-01-01', 'yee-boi')
         expect(dt).toBeUndefined()

@@ -130,6 +130,15 @@ export class YSDSDate {
 
     public static parse(value: string, format?: string): YSDSDate | undefined {
         if (typeof format === 'undefined' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+            // it seems webkit cannot natively parse dates of
+            // format "yyyy-MM-dd HH:mm:ss". however, if we
+            // replace the space between dd and HH with a T
+            // the string is accepted.
+            if (value.length > 10) {
+                const chars = value.split('')
+                chars[10] = 'T'
+                value = chars.join('')
+            }
             const dt = new Date(value)
 
             if (isNaN(dt.getTime())) {
