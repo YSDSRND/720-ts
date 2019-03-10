@@ -19,6 +19,7 @@
         "member-ordering": false,
         "no-bitwise": false,
         "no-conditional-assignment": false,
+        "no-console": [true, "log"],
         "no-empty": [true, "allow-empty-functions", "allow-empty-catch"],
         "no-empty-interface": false,
         "no-shadowed-variable": false,

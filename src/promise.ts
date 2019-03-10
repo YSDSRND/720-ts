@@ -34,7 +34,7 @@ export class Promise<T> implements PromiseLike<T> {
 
     public unhandledRejectionHandler: Func1<any, void> = Promise.defaultUnhandledRejectionHandler
 
-    public static defaultUnhandledRejectionHandler: Func1<any, void> = function (err) {
+    public static defaultUnhandledRejectionHandler: Func1<any, void> = function(err) {
         console.error('Possibly unhandled promise rejection: ', err)
     }
 
