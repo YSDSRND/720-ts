@@ -30,6 +30,13 @@ export class Promise<T> implements PromiseLike<T> {
     protected onRejects: Array<Handler<any, any>>
     protected state: State
     protected value: any
+    protected didHandleRejection: boolean = false
+
+    public unhandledRejectionHandler: Func1<any, void> = Promise.defaultUnhandledRejectionHandler
+
+    public static defaultUnhandledRejectionHandler: Func1<any, void> = function (err) {
+        console.error('Possibly unhandled promise rejection: ', err)
+    }
 
     constructor(init?: Initializer<T>) {
         this.onFulfills = []
@@ -54,6 +61,10 @@ export class Promise<T> implements PromiseLike<T> {
             const handlers = state == State.Fulfilled ?
                 this.onFulfills :
                 this.onRejects
+
+            if (state === State.Rejected && !this.didHandleRejection) {
+                this.unhandledRejectionHandler(value)
+            }
 
             for (const fn of handlers) {
                 fn(value)
@@ -89,7 +100,7 @@ export class Promise<T> implements PromiseLike<T> {
     }
 
     protected createDoneHandler<U>(other: Promise<U>, handler: any, method: 'fulfill' | 'reject') {
-        return function(result: any) {
+        return (result: any) => {
             if (typeof handler === 'function') {
                 try {
                     // 2.2.7.1
@@ -123,6 +134,7 @@ export class Promise<T> implements PromiseLike<T> {
         // 2.2.7
         // then must return a promise
         const promise = new Promise<T | U | UErr>()
+        promise.unhandledRejectionHandler = this.unhandledRejectionHandler
 
         // 2.2.2
         // If onFulfilled is a function:
@@ -138,6 +150,7 @@ export class Promise<T> implements PromiseLike<T> {
             this.createDoneHandler(promise, onFulfill, 'fulfill'),
             this.createDoneHandler(promise, onReject, 'reject')
         )
+        this.didHandleRejection = typeof onReject === 'function'
 
         return promise
     }
