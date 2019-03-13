@@ -44,4 +44,24 @@ describe('EventEmitter tests', function () {
         expect(result).toBe(0)
     })
 
+    it('should allow unsub inside event handler', function () {
+        let a = false
+        let b = false
+
+        const fn = function () {
+            a = true
+            emitter.unsubscribe('myEvent', fn)
+        }
+
+        emitter.subscribe('myEvent', fn)
+        emitter.subscribe('myEvent', function () {
+            b = true
+        })
+
+        emitter.trigger('myEvent', 'yee', 1)
+
+        expect(a).toBe(true)
+        expect(b).toBe(true)
+    })
+
 })

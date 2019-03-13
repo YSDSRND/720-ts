@@ -28,7 +28,7 @@ export class EventEmitter<T extends ArgumentMap> {
     }
 
     public trigger<K extends keyof T>(event: K, ...args: T[K]): void {
-        const fns = this.listeners[event]! || []
+        const fns = (this.listeners[event]! || []).slice()
 
         for (const fn of fns) {
             // currently we can't generically express the
