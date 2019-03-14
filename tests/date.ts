@@ -245,6 +245,7 @@ describe('unicodeParser tests', function() {
         '2019-03-14T00:15:00+04:00',
         '2019-03-14T00:15:00-06:00',
         '2019-03-14T23:15:00+11:00',
+        '2019-03-14T23:15:00+11:30',
     ].forEach((value, idx) => {
         it('parsing timezones should behave like Date.parse() ' + idx, function () {
             const parsed = parser.parse(value, 'yyyy-MM-ddTHH:mm:ssxxx')

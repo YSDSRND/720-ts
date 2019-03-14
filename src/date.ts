@@ -313,9 +313,7 @@ export const unicodeParser = new PatternParser({
     xxx: ['[+-]\\d{2}:\\d{2}', (match, date) => {
         const localOffset = (new Date()).getTimezoneOffset()
         const sign = match[0] === '+' ? -1 : 1
-        const offsetMinutes = sign *
-            (parseInt(match.slice(1, 3)) * 60) +
-            parseInt(match.slice(4, 6))
+        const offsetMinutes = sign * ((parseInt(match.slice(1, 3)) * 60) + parseInt(match.slice(4, 6)))
         const diff = offsetMinutes - localOffset
         return date.add(DateComponent.Minute, diff)
     }],
