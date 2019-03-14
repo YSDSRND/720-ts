@@ -98,6 +98,12 @@ describe('YSDSDate tests', function () {
         const dt = YSDSDate.parse('2018-01-01YEEEEEEEEEEEEEE')
         expect(dt).toBeUndefined()
     })
+
+    it('should return 0 hours when parsing an ISO-like date', function () {
+        const dt = YSDSDate.parse('2019-03-14')
+
+        expect(dt!.hour).toBe(0)
+    })
 })
 
 describe('replacement converter tests', () => {
@@ -240,6 +246,8 @@ describe('PatternParser tests', function() {
         expect(dt.month).toBe(2)
         expect(dt.date).toBe(3)
     })
+
+
 })
 
 describe('unicodeFormatter tests', function() {

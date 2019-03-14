@@ -139,6 +139,24 @@ export class YSDSDate {
                 chars[10] = 'T'
                 value = chars.join('')
             }
+
+            // javascript behaves very inconsistently when parsing
+            // dates of yyyy-MM-dd format. it appears the parse stage
+            // defaults to UTC timezone, which is weird since all other
+            // methods of Date.prototype returns values in the local
+            // timezone. if your local timezone is behind UTC you can end
+            // up in weird scenarios like this:
+            //
+            //     new Date('2019-03-14').getDate() => 13
+            //
+            // to fix this we'll append 00:00:00 plus the local
+            // timezone to force the implementation to actually create
+            // a correct date for us.
+            if (value.length === 10) {
+                const now = YSDSDate.now()
+                value += now.format('T00:00:00xxx')
+            }
+
             const dt = new Date(value)
 
             if (isNaN(dt.getTime())) {
