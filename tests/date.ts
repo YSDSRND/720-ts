@@ -1,9 +1,7 @@
 import {
     DateComponent,
-    DateParserInterface,
-    PatternParser,
     ReplacementConverter,
-    ReplacementFormatter, unicodeFormatter,
+    ReplacementFormatter, unicodeFormatter, unicodeParser,
     YSDSDate
 } from "../src/date";
 
@@ -199,19 +197,8 @@ describe('ReplacementFormatter tests', () => {
 
 })
 
-describe('PatternParser tests', function() {
-    let parser: DateParserInterface
-
-    beforeEach(function () {
-        parser = new PatternParser({
-            yyyy: ['\\d{4}', DateComponent.Year],
-            MM: ['\\d{2}', DateComponent.Month],
-            dd: ['\\d{2}', DateComponent.Date],
-            HH: ['\\d{2}', DateComponent.Hour],
-            mm: ['\\d{2}', DateComponent.Minute],
-            ss: ['\\d{2}', DateComponent.Second],
-        })
-    })
+describe('unicodeParser tests', function() {
+    const parser = unicodeParser
 
     it('should parse correctly', function() {
         const dt = parser.parse('2014-05-06 12:30:45', 'yyyy-MM-dd HH:mm:ss')!
@@ -245,8 +232,32 @@ describe('PatternParser tests', function() {
         expect(dt.year).toBe(2017)
         expect(dt.month).toBe(2)
         expect(dt.date).toBe(3)
-    })
+    });
 
+    it('should let empty fields be 0', function () {
+        const dt = parser.parse('2017-02-03 06', 'yyyy-MM-dd HH')!
+        expect(dt.hour).toBe(6)
+        expect(dt.minute).toBe(0)
+        expect(dt.second).toBe(0)
+    });
+
+    [
+        '2019-03-14T00:15:00+04:00',
+        '2019-03-14T00:15:00-06:00',
+        '2019-03-14T23:15:00+11:00',
+    ].forEach((value, idx) => {
+        it('parsing timezones should behave like Date.parse() ' + idx, function () {
+            const parsed = parser.parse(value, 'yyyy-MM-ddTHH:mm:ssxxx')
+            const dt = new Date(value)
+
+            expect(parsed!.year).toBe(dt.getFullYear())
+            expect(parsed!.month).toBe(dt.getMonth() + 1)
+            expect(parsed!.date).toBe(dt.getDate())
+            expect(parsed!.hour).toBe(dt.getHours())
+            expect(parsed!.minute).toBe(dt.getMinutes())
+            expect(parsed!.second).toBe(dt.getSeconds())
+        })
+    })
 
 })
 

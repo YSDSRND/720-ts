@@ -153,8 +153,7 @@ export class YSDSDate {
             // timezone to force the implementation to actually create
             // a correct date for us.
             if (value.length === 10) {
-                const now = YSDSDate.now()
-                value += now.format('T00:00:00xxx')
+                value += YSDSDate.now().format('T00:00:00xxx')
             }
 
             const dt = new Date(value)
@@ -244,25 +243,29 @@ export class ReplacementConverter implements DateFormatConverterInterface {
     }
 }
 
+interface MatchHandler {
+    (match: string, current: YSDSDate): YSDSDate
+}
+
 export class PatternParser implements DateParserInterface {
 
-    protected readonly patterns: ReadonlyMap<[string, DateComponent]>
-    protected readonly cache: Map<[RegExp, ReadonlyArray<DateComponent>]> = {}
+    protected readonly patterns: ReadonlyMap<[string, MatchHandler]>
+    protected readonly cache: Map<[RegExp, ReadonlyArray<MatchHandler>]> = {}
 
-    constructor(patterns: ReadonlyMap<[string, DateComponent]>) {
+    constructor(patterns: ReadonlyMap<[string, MatchHandler]>) {
         this.patterns = patterns
     }
 
-    protected buildMatchingSequence(format: string): [RegExp, ReadonlyArray<DateComponent>] {
+    protected buildMatchingSequence(format: string): [RegExp, ReadonlyArray<MatchHandler>] {
         if (!this.cache.hasOwnProperty(format)) {
             // build a regex containing all formatting descriptors
-            const formatRegex = orderDescendingByLength(Object.keys(this.patterns)).join('|')
+            const formatRegex = Object.keys(this.patterns).join('|')
 
             // using the formatting descriptors we construct a new
             // regex with the actual date matching patterns. we also
             // save the matching date component so we can keep track
             // of which part of the date to change with the match.
-            const components: Array<DateComponent> = []
+            const components: Array<MatchHandler> = []
             const dateRegex = format.replace(new RegExp(formatRegex, 'g'), match => {
                 const p = this.patterns[match]
                 components.push(p[1])
@@ -281,25 +284,41 @@ export class PatternParser implements DateParserInterface {
             return undefined
         }
 
-        const dt = new Date()
+        let dt = new YSDSDate(0, 1, 1, 0, 0, 0, 0)
 
         for (let i = 1; i < matches.length; i++) {
             const component = seq[1][i - 1]
-            const fn = setterMap[component] as (this: Date, value: number) => void
-            fn.call(dt, parseInt(matches[i]))
+            dt = component(matches[i], dt)
         }
 
-        return YSDSDate.fromDate(dt)
+        return dt
+    }
+
+    public static matchHandlerForComponent(component: DateComponent): MatchHandler {
+        return (match, current) => {
+            return current.withComponent(
+                component, parseInt(match)
+            )
+        }
     }
 }
 
 export const unicodeParser = new PatternParser({
-    yyyy: ['\\d{4}', DateComponent.Year],
-    MM: ['\\d{2}', DateComponent.Month],
-    dd: ['\\d{2}', DateComponent.Date],
-    HH: ['\\d{2}', DateComponent.Hour],
-    mm: ['\\d{2}', DateComponent.Minute],
-    ss: ['\\d{2}', DateComponent.Second],
+    yyyy: ['\\d{4}', PatternParser.matchHandlerForComponent(DateComponent.Year)],
+    MM: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Month)],
+    dd: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Date)],
+    HH: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Hour)],
+    mm: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Minute)],
+    ss: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Second)],
+    xxx: ['[+-]\\d{2}:\\d{2}', (match, date) => {
+        const localOffset = (new Date()).getTimezoneOffset()
+        const sign = match[0] === '+' ? -1 : 1
+        const offsetMinutes = sign *
+            (parseInt(match.slice(1, 3)) * 60) +
+            parseInt(match.slice(4, 6))
+        const diff = offsetMinutes - localOffset
+        return date.add(DateComponent.Minute, diff)
+    }],
 })
 
 const twelveHourClockHours = [
