@@ -129,40 +129,32 @@ export class YSDSDate {
     }
 
     public static parse(value: string, format?: string): YSDSDate | undefined {
-        if (typeof format === 'undefined' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
-            // it seems webkit cannot natively parse dates of
-            // format "yyyy-MM-dd HH:mm:ss". however, if we
-            // replace the space between dd and HH with a T
-            // the string is accepted.
-            if (value.length > 10) {
+        if (typeof format === 'undefined') {
+            const lengthToAssumedFormat: Map<string> = {
+                // 2019-01-01
+                10: 'yyyy-MM-dd',
+
+                // 2019-01-01T00:00:00
+                19: 'yyyy-MM-ddTHH:mm:ss',
+
+                // 2019-01-01T00:00:00Z
+                20: 'yyyy-MM-ddTHH:mm:ssXXX',
+
+                // 2019-01-01T00:00:00+0000
+                24: 'yyyy-MM-ddTHH:mm:ssXX',
+
+                // 2019-01-01T00:00:00+00:00
+                25: 'yyyy-MM-ddTHH:mm:ssXXX',
+            }
+
+            format = lengthToAssumedFormat[value.length]
+
+            // in some cases the "T" character is a space.
+            if (format && value.length > 10) {
                 const chars = value.split('')
                 chars[10] = 'T'
                 value = chars.join('')
             }
-
-            // javascript behaves very inconsistently when parsing
-            // dates of yyyy-MM-dd format. it appears the parse stage
-            // defaults to UTC timezone, which is weird since all other
-            // methods of Date.prototype returns values in the local
-            // timezone. if your local timezone is behind UTC you can end
-            // up in weird scenarios like this:
-            //
-            //     new Date('2019-03-14').getDate() => 13
-            //
-            // to fix this we'll append 00:00:00 plus the local
-            // timezone to force the implementation to actually create
-            // a correct date for us.
-            if (value.length === 10) {
-                value += YSDSDate.now().format('T00:00:00xxx')
-            }
-
-            const dt = new Date(value)
-
-            if (isNaN(dt.getTime())) {
-                return undefined
-            }
-
-            return YSDSDate.fromDate(dt)
         }
 
         return unicodeParser.parse(value, format || 'yyyy-MM-dd HH:mm:ss')
@@ -259,7 +251,7 @@ export class PatternParser implements DateParserInterface {
     protected buildMatchingSequence(format: string): [RegExp, ReadonlyArray<MatchHandler>] {
         if (!this.cache.hasOwnProperty(format)) {
             // build a regex containing all formatting descriptors
-            const formatRegex = Object.keys(this.patterns).join('|')
+            const formatRegex = orderDescendingByLength(Object.keys(this.patterns)).join('|')
 
             // using the formatting descriptors we construct a new
             // regex with the actual date matching patterns. we also
@@ -303,6 +295,29 @@ export class PatternParser implements DateParserInterface {
     }
 }
 
+const timezonePattern = /Z|(?:[+-]\d{2}:?\d{2})/
+
+function parseTimezoneOffset(value: string): number {
+    if (!timezonePattern.test(value)) {
+        return 0
+    }
+
+    // Z
+    if (value.length === 1) {
+        return 0
+    }
+
+    const sign = value[0] === '+' ? -1 : 1
+    return sign * ((parseInt(value.slice(1, 3)) * 60) + parseInt(value.slice(-2)))
+}
+
+const timezoneMatchHandler: MatchHandler = (match, date) => {
+    const localOffset = (new Date()).getTimezoneOffset()
+    const offsetMinutes = parseTimezoneOffset(match)
+    const diff = offsetMinutes - localOffset
+    return date.add(DateComponent.Minute, diff)
+}
+
 export const unicodeParser = new PatternParser({
     yyyy: ['\\d{4}', PatternParser.matchHandlerForComponent(DateComponent.Year)],
     MM: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Month)],
@@ -310,13 +325,10 @@ export const unicodeParser = new PatternParser({
     HH: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Hour)],
     mm: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Minute)],
     ss: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Second)],
-    xxx: ['[+-]\\d{2}:\\d{2}', (match, date) => {
-        const localOffset = (new Date()).getTimezoneOffset()
-        const sign = match[0] === '+' ? -1 : 1
-        const offsetMinutes = sign * ((parseInt(match.slice(1, 3)) * 60) + parseInt(match.slice(4, 6)))
-        const diff = offsetMinutes - localOffset
-        return date.add(DateComponent.Minute, diff)
-    }],
+    xxx: ['[+-]\\d{2}:\\d{2}', timezoneMatchHandler],
+    xx: ['[+-]\\d{2}\\d{2}', timezoneMatchHandler],
+    XXX: ['Z|(?:[+-]\\d{2}:\\d{2})', timezoneMatchHandler],
+    XX: ['Z|(?:[+-]\\d{2}\\d{2})', timezoneMatchHandler],
 })
 
 const twelveHourClockHours = [
@@ -349,6 +361,20 @@ export const unicodeFormatter = new ReplacementFormatter({
     },
     xx: (date, fmt) => {
         return fmt.format(date, 'xxx').replace(':', '')
+    },
+    XXX: (date, fmt) => {
+        const offset = date.timezoneOffset
+        if (offset === 0) {
+            return 'Z'
+        }
+        return fmt.format(date, 'xxx')
+    },
+    XX: (date, fmt) => {
+        const offset = date.timezoneOffset
+        if (offset === 0) {
+            return 'Z'
+        }
+        return fmt.format(date, 'xx')
     },
     a: date => date.hour < 12 ? 'am' : 'pm',
 })

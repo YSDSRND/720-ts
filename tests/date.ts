@@ -73,11 +73,22 @@ describe('YSDSDate tests', function () {
         })
     }
 
-    it('should parse ISO-like dates natively', function() {
-        const dt = YSDSDate.parse('2018-04-05T06:00:00Z')!
-        expect(dt.year).toBe(2018)
-        expect(dt.month).toBe(4)
-        expect(dt.date).toBe(5)
+    [
+        '2018-04-05',
+        '2018-04-05 12:00:00',
+        '2018-04-05 12:00:00+0000',
+        '2018-04-05 12:00:00+00:00',
+        '2018-04-05T12:00:00',
+        '2018-04-05T12:00:00+0000',
+        '2018-04-05T12:00:00+00:00',
+        '2018-04-05T12:00:00Z'
+    ].forEach((value, idx) => {
+        it('should parse ISO-like dates natively ' + idx, function() {
+            const dt = YSDSDate.parse(value)!
+            expect(dt.year).toBe(2018)
+            expect(dt.month).toBe(4)
+            expect(dt.date).toBe(5)
+        })
     })
 
     it('should parse mysql-like dates natively', function () {
