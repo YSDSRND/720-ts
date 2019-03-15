@@ -2,10 +2,10 @@ import { formToObject } from "../src/formToObject";
 import { createElement } from "../src/createElement"
 import { range } from "../src/range";
 
-describe('formToObject tests', function () {
+describe('formToObject tests', () => {
     let container: Element
 
-    beforeEach(function () {
+    beforeEach(() => {
         container = createElement('form', {}, [
             createElement<HTMLInputElement>('input', {
                 name: 'a',
@@ -30,7 +30,7 @@ describe('formToObject tests', function () {
         ])
     })
 
-    it('should serialize correctly', function () {
+    it('should serialize correctly', () => {
         const ser = formToObject(container)
 
         expect(ser).toEqual({
@@ -41,7 +41,7 @@ describe('formToObject tests', function () {
         })
     })
 
-    it('should use valueGetter', function () {
+    it('should use valueGetter', () => {
         const ser = formToObject(container, elem => {
             return elem.value + '_YEE'
         })

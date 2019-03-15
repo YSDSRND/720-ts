@@ -1,54 +1,54 @@
 import {debounce} from "../src/debounce";
 
-describe('debounce tests', function () {
+describe('debounce tests', () => {
 
     let calls: number = 0
 
-    beforeEach(function () {
+    beforeEach(() => {
         calls = 0
     })
 
-    const fn = debounce(function () {
+    const fn = debounce(() => {
         return ++calls
     }, 100)
 
-    it('should call function once if called repeatedly', function (done) {
+    it('should call function once if called repeatedly', (done) => {
         fn()
         fn()
         fn()
 
-        setTimeout(function () {
+        setTimeout(() => {
             expect(calls).toBe(1)
             done()
         }, 120)
     })
 
-    it('should wait until the trailing edge to call the function', function (done) {
+    it('should wait until the trailing edge to call the function', (done) => {
         fn()
 
-        setTimeout(function () {
+        setTimeout(() => {
             fn()
         }, 50)
 
-        setTimeout(function () {
+        setTimeout(() => {
             expect(calls).toBe(0)
         }, 120)
 
-        setTimeout(function () {
+        setTimeout(() => {
             expect(calls).toBe(1)
             done()
         }, 200)
     })
 
-    it('should call function multiple time if threshold is passed', function (done) {
+    it('should call function multiple time if threshold is passed', (done) => {
         fn()
         fn() // this call will be ignored
 
-        setTimeout(function () {
+        setTimeout(() => {
             fn() // this will be executed after 220ms
         }, 120)
 
-        setTimeout(function () {
+        setTimeout(() => {
             expect(calls).toBe(2)
             done()
         }, 300)

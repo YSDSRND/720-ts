@@ -1,18 +1,19 @@
 import {Promise} from "../src/promise";
 
-export const resolved = function(value: any) {
+export function resolved(value: any) {
     return new Promise((resolve, reject) => {
         resolve(value)
     })
 }
-export const rejected = function(value: any) {
+export function rejected(value: any) {
     return new Promise((resolve, reject) => {
         reject(value)
     })
 }
 export function deferred() {
-    let a, b
-    let promise = new Promise((resolve, reject) => {
+    let a
+    let b
+    const promise = new Promise((resolve, reject) => {
         a = resolve
         b = reject
     })

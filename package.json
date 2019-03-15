@@ -8,8 +8,8 @@
     "test": "karma start --single-run",
     "test-junit": "karma start --single-run --reporters junit",
     "promise-tests": "",
-    "tslint": "tslint --format verbose \"src/**/*.{ts,tsx}\"",
-    "tslint-fix": "tslint --fix \"src/**/*.{ts,tsx}\""
+    "tslint": "tslint --format verbose \"{src,tests}/**/*.{ts,tsx}\"",
+    "tslint-fix": "tslint --fix \"{src,tests}/**/*.{ts,tsx}\""
   },
   "contributors": [
     {

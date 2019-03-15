@@ -1,14 +1,14 @@
 import {EventEmitter} from "../src/events";
 
-describe('EventEmitter tests', function () {
+describe('EventEmitter tests', () => {
 
     let emitter: EventEmitter<{ 'myEvent': [string, number] }>
 
-    beforeEach(function () {
+    beforeEach(() => {
         emitter = new EventEmitter()
     })
 
-    it('should trigger event handlers with arguments', function () {
+    it('should trigger event handlers with arguments', () => {
         emitter.subscribe('myEvent', (a, b) => {
             expect(a).toBe('yee')
             expect(b).toBe(1)
@@ -17,7 +17,7 @@ describe('EventEmitter tests', function () {
         emitter.trigger('myEvent', 'yee', 1)
     })
 
-    it('should trigger event handlers in attached order', function () {
+    it('should trigger event handlers in attached order', () => {
         const out: Array<number> = []
         emitter.subscribe('myEvent', (a, b) => {
             out.push(1)
@@ -30,7 +30,7 @@ describe('EventEmitter tests', function () {
         expect(out).toEqual([1, 2])
     })
 
-    it('should unsubscribe correctly', function () {
+    it('should unsubscribe correctly', () => {
         let result = 0
         const fn = (a: string, b: number) => {
             ++result
@@ -44,17 +44,17 @@ describe('EventEmitter tests', function () {
         expect(result).toBe(0)
     })
 
-    it('should allow unsub inside event handler', function () {
+    it('should allow unsub inside event handler', () => {
         let a = false
         let b = false
 
-        const fn = function () {
+        const fn = () => {
             a = true
             emitter.unsubscribe('myEvent', fn)
         }
 
         emitter.subscribe('myEvent', fn)
-        emitter.subscribe('myEvent', function () {
+        emitter.subscribe('myEvent', () => {
             b = true
         })
 

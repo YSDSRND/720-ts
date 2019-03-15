@@ -1,7 +1,7 @@
 import {flip} from "../src/flip";
 
-describe('flip tests', function () {
-    it('should flip correctly', function () {
+describe('flip tests', () => {
+    it('should flip correctly', () => {
         const m = {
             a: 'c',
             b: 'd',

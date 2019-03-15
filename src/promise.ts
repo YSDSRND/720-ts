@@ -34,7 +34,7 @@ export class Promise<T> implements PromiseLike<T> {
 
     public unhandledRejectionHandler: Func1<any, void> = Promise.defaultUnhandledRejectionHandler
 
-    public static defaultUnhandledRejectionHandler: Func1<any, void> = function(err) {
+    public static defaultUnhandledRejectionHandler: Func1<any, void> = (err) => {
         console.error('Possibly unhandled promise rejection: ', err)
     }
 
@@ -189,7 +189,7 @@ export class Promise<T> implements PromiseLike<T> {
                     // call it with x as this,
                     // first argument resolvePromise,
                     // and second argument rejectPromise,
-                    then.call(value, function(y: T) {
+                    then.call(value, (y: T) => {
                         // 2.3.3.3.1
                         // If/when resolvePromise is called with a value y,
                         // run [[Resolve]](promise, y).
@@ -197,7 +197,7 @@ export class Promise<T> implements PromiseLike<T> {
                             called = true
                             Promise.executeResolutionProcedure(promise, y)
                         }
-                    }, function(reason: any) {
+                    }, (reason: any) => {
                         // 2.3.3.3.2
                         // If/when rejectPromise is called with a reason r,
                         // reject promise with r.

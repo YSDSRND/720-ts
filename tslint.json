@@ -26,12 +26,18 @@
         "no-var-requires": false,
         "object-literal-shorthand": false,
         "object-literal-sort-keys": false,
-        "only-arrow-functions": false,
+        "only-arrow-functions": [true, "allow-named-functions"],
         "ordered-imports": false,
         "prefer-for-of": false,
         "quotemark": false,
         "radix": false,
         "semicolon": false,
+        "space-before-function-paren": [
+            true,
+            {
+                "anonymous": "always"
+            }
+        ],
         "trailing-comma": [
             true,
             {

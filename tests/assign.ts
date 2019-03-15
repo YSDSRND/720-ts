@@ -1,15 +1,15 @@
 import {assign} from "../src/assign"
 
-describe('assign tests', function () {
+describe('assign tests', () => {
 
-    it('should assign to first parameter', function () {
+    it('should assign to first parameter', () => {
         const out = {}
         const result = assign(out, {yee: 'boi'})
 
         expect(out).toBe(result)
     })
 
-    it('should copy from second parameter', function () {
+    it('should copy from second parameter', () => {
         const result = assign<any>({a: 'b'}, {c: 'd'})
         expect(result).toEqual({
             a: 'b',
@@ -17,10 +17,10 @@ describe('assign tests', function () {
         })
     })
 
-    it('later parameters should override earlier', function () {
+    it('later parameters should override earlier', () => {
         const result = assign<any>({a: 1}, {a: 2}, {a: 3})
         expect(result).toEqual({
-            a: 3
+            a: 3,
         })
     })
 

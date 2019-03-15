@@ -1,26 +1,26 @@
 import {Promise} from "../src/promise";
 import {Func1} from "../src/types";
 
-describe('promise tests', function () {
+describe('promise tests', () => {
     let originalRejectionHandler: Func1<any, void>
     let unhandledRejection: any
 
-    beforeAll(function () {
+    beforeAll(() => {
         originalRejectionHandler = Promise.defaultUnhandledRejectionHandler
-        Promise.defaultUnhandledRejectionHandler = function (value) {
+        Promise.defaultUnhandledRejectionHandler = (value) => {
             unhandledRejection = value
         }
     })
 
-    afterAll(function () {
+    afterAll(() => {
         Promise.defaultUnhandledRejectionHandler = originalRejectionHandler
     })
 
-    beforeEach(function () {
+    beforeEach(() => {
         unhandledRejection = undefined
     })
 
-    it('should resolve correctly', function (done) {
+    it('should resolve correctly', (done) => {
         const p = new Promise<number>((resolve, reject) => {
             resolve(1)
         })
@@ -31,7 +31,7 @@ describe('promise tests', function () {
         })
     })
 
-    it('should reject on errors', function (done) {
+    it('should reject on errors', (done) => {
         const p = new Promise<number>((resolve, reject) => {
             resolve(1)
         })
@@ -44,14 +44,14 @@ describe('promise tests', function () {
         })
     })
 
-    it('Promise.all should wait for all promises to resolve', function (done) {
+    it('Promise.all should wait for all promises to resolve', (done) => {
         const a = new Promise<number>((resolve, reject) => {
-            setTimeout(function () {
+            setTimeout(() => {
                 resolve(100)
             }, 100)
         })
         const b = new Promise<string>((resolve, reject) => {
-            setTimeout(function () {
+            setTimeout(() => {
                 resolve('yee')
             }, 200)
         })
@@ -62,38 +62,38 @@ describe('promise tests', function () {
         })
     })
 
-    it('Promise.resolve should work correctly with scalars', function (done) {
+    it('Promise.resolve should work correctly with scalars', (done) => {
         Promise.resolve(1).then(res => {
             expect(res).toBe(1)
             done()
         })
     })
 
-    it('Promise.resolve should work correctly with promise like structures', function (done) {
+    it('Promise.resolve should work correctly with promise like structures', (done) => {
         Promise.resolve(Promise.resolve(1)).then(res => {
             expect(res).toBe(1)
             done()
         })
     })
 
-    it('should inform on uncaught rejections', function (done) {
+    it('should inform on uncaught rejections', (done) => {
         Promise.reject('boi')
-        setTimeout(function () {
+        setTimeout(() => {
             expect(unhandledRejection).toBe('boi')
             done()
         }, 100)
     })
 
-    it('should propagate unhandled rejections when handler is not supplied', function (done) {
-        Promise.reject('boi').then(function () {})
-        setTimeout(function () {
+    it('should propagate unhandled rejections when handler is not supplied', (done) => {
+        Promise.reject('boi').then(() => {})
+        setTimeout(() => {
             expect(unhandledRejection).toBe('boi')
             done()
         }, 100)
     })
 
-    it('should detect unhandled rejections in resolve handler', function (done) {
-        Promise.resolve('ok').then(function () {
+    it('should detect unhandled rejections in resolve handler', (done) => {
+        Promise.resolve('ok').then(() => {
             return Promise.reject('SOME_ERROR')
         })
 
@@ -101,15 +101,14 @@ describe('promise tests', function () {
         // promise has been rejected so we can check for the
         // error. because the rejection itself is asynchronous
         // we must schedule this handler with a slight timeout.
-        setTimeout(function () {
+        setTimeout(() => {
             expect(unhandledRejection).toBe('SOME_ERROR')
             done()
         }, 100)
     })
 
-
-    it('should detect unhandled rejections in reject handler', function (done) {
-        Promise.reject('fail').then(undefined, function () {
+    it('should detect unhandled rejections in reject handler', (done) => {
+        Promise.reject('fail').then(undefined, () => {
             return Promise.reject('SOME_FAT_REJECT_ERROR')
         })
 
@@ -117,27 +116,27 @@ describe('promise tests', function () {
         // promise has been rejected so we can check for the
         // error. because the rejection itself is asynchronous
         // we must schedule this handler with a slight timeout.
-        setTimeout(function () {
+        setTimeout(() => {
             expect(unhandledRejection).toBe('SOME_FAT_REJECT_ERROR')
             done()
         }, 100)
     })
 
-    it('should not propagate unhandled rejections if handler is supplied', function (done) {
-        Promise.reject('some-error').then(undefined, function (err) {})
+    it('should not propagate unhandled rejections if handler is supplied', (done) => {
+        Promise.reject('some-error').then(undefined, (err) => {})
 
-        setTimeout(function () {
+        setTimeout(() => {
             expect(unhandledRejection).toBeUndefined()
             done()
         }, 100)
     })
 
-    it('should detect unhandled thrown errors', function (done) {
+    it('should detect unhandled thrown errors', (done) => {
         Promise.resolve('ok').then(res => {
             throw new Error('YEE')
         })
 
-        setTimeout(function () {
+        setTimeout(() => {
             expect(unhandledRejection.message).toBe('YEE')
             done()
         }, 100)

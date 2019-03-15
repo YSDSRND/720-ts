@@ -1,10 +1,10 @@
 import {keyBy} from "../src/keyBy";
 
-describe('keyBy tests', function () {
+describe('keyBy tests', () => {
 
     const data = [1, 2, 3, 4, 5]
 
-    it('should key by correctly', function () {
+    it('should key by correctly', () => {
         const result = keyBy(data, item => item)
 
         expect(result).toEqual({
@@ -16,7 +16,7 @@ describe('keyBy tests', function () {
         })
     })
 
-    it('should overwrite duplicate keys', function () {
+    it('should overwrite duplicate keys', () => {
         const result = keyBy(data, item => item < 3 ? 'a' : 'b')
         expect(result).toEqual({
             a: 2,

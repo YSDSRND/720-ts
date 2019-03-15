@@ -1,16 +1,16 @@
 import {HttpClient, MockBackend, XMLHttpRequestBackend} from "../src/http"
 
-describe('HttpClient tests', function () {
+describe('HttpClient tests', () => {
 
     let backend: MockBackend
     let client: HttpClient
 
-    beforeEach(function () {
+    beforeEach(() => {
         backend = new MockBackend()
         client = new HttpClient(backend)
     })
 
-    it('should send requests properly', function (done) {
+    it('should send requests properly', (done) => {
         backend.handlers.push(request => {
             return {
                 status: 200,
@@ -27,7 +27,7 @@ describe('HttpClient tests', function () {
         })
     })
 
-    it('should forward default headers', function (done) {
+    it('should forward default headers', (done) => {
         backend.handlers.push(request => {
             expect(request.headers!['Content-Type']).toBe('application/json')
 
@@ -45,7 +45,7 @@ describe('HttpClient tests', function () {
         })
     })
 
-    it('should reject responses outside 200 >= x < 400', function (done) {
+    it('should reject responses outside 200 >= x < 400', (done) => {
         backend.handlers.push(request => {
             return {
                 status: 400,
@@ -61,15 +61,15 @@ describe('HttpClient tests', function () {
 
 })
 
-describe('XMLHttpRequestBackend tests', function () {
+describe('XMLHttpRequestBackend tests', () => {
 
     let backend: XMLHttpRequestBackend
 
-    beforeEach(function () {
-        backend = new XMLHttpRequestBackend
+    beforeEach(() => {
+        backend = new XMLHttpRequestBackend()
     })
 
-    it('should send requests', function (done) {
+    it('should send requests', (done) => {
         backend.send({ method: 'GET', url: 'https://enable-cors.org' }).then(res => {
             expect(res.status).toBe(200)
             expect(res.body).toBeTruthy()

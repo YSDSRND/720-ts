@@ -31,7 +31,7 @@ function orderDescendingByLength(items: ArrayLike<string>): ReadonlyArray<string
 
 const getterMap = {
     [DateComponent.Year]: Date.prototype.getFullYear,
-    [DateComponent.Month]: function(this: Date) {
+    [DateComponent.Month]: function (this: Date) {
         return this.getMonth() + 1
     },
     [DateComponent.Date]: Date.prototype.getDate,
@@ -43,7 +43,7 @@ const getterMap = {
 
 const setterMap = {
     [DateComponent.Year]: Date.prototype.setFullYear,
-    [DateComponent.Month]: function(this: Date, value: number) {
+    [DateComponent.Month]: function (this: Date, value: number) {
         const prevDate = this.getDate()
         this.setMonth(value - 1)
 

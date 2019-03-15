@@ -1,23 +1,23 @@
 import {throttle} from "../src/throttle";
 
-describe('throttle tests', function () {
+describe('throttle tests', () => {
 
     let calls: number = 0
 
-    beforeEach(function () {
+    beforeEach(() => {
         calls = 0
     })
 
-    const fn = throttle(function () {
+    const fn = throttle(() => {
         return ++calls
     }, 100)
 
-    it('should call function once if called repeatedly', function (done) {
+    it('should call function once if called repeatedly', (done) => {
         fn()
         fn()
         fn()
 
-        setTimeout(function () {
+        setTimeout(() => {
             expect(calls).toBe(1)
             done()
         }, 120)
@@ -26,30 +26,30 @@ describe('throttle tests', function () {
     // this test highlights the difference between debounce & throttle.
     // a debounced function determines its timeout from the last function
     // call while a throttled function uses the first.
-    it('should call the function when the first timeout expires', function (done) {
+    it('should call the function when the first timeout expires', (done) => {
         fn()
         fn()
         fn()
 
-        setTimeout(function () {
+        setTimeout(() => {
             fn()
         }, 80)
 
-        setTimeout(function () {
+        setTimeout(() => {
             expect(calls).toBe(1)
             done()
         }, 120)
     })
 
-    it('should call the function multiple times if the threshold is passed', function (done) {
+    it('should call the function multiple times if the threshold is passed', (done) => {
         fn()
         fn() // this call will be ignored
 
-        setTimeout(function () {
+        setTimeout(() => {
             fn() // this will be executed after 220ms
         }, 120)
 
-        setTimeout(function () {
+        setTimeout(() => {
             expect(calls).toBe(2)
             done()
         }, 300)

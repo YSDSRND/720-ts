@@ -5,9 +5,9 @@ import {
     YSDSDate
 } from "../src/date";
 
-describe('YSDSDate tests', function () {
+describe('YSDSDate tests', () => {
 
-    it('should get components correctly', function () {
+    it('should get components correctly', () => {
         const dt = new YSDSDate(2019, 1, 31)
 
         expect(dt.year).toBe(2019)
@@ -15,7 +15,7 @@ describe('YSDSDate tests', function () {
         expect(dt.date).toBe(31)
     })
 
-    it('should prevent month overflow', function () {
+    it('should prevent month overflow', () => {
         const dt = new YSDSDate(2019, 1, 31)
         const added = dt.add(DateComponent.Month, 1)
         expect(added.year).toBe(2019)
@@ -64,7 +64,7 @@ describe('YSDSDate tests', function () {
 
     for (let i = 0; i < dataProvider.length; ++i) {
         const data = dataProvider[i]
-        it(`should add components correctly ${i}`, function () {
+        it(`should add components correctly ${i}`, () => {
             const dt = new YSDSDate(data[0], data[1], data[2])
             const added = dt.add(data[3], data[4])
             expect(added.year).toBe(data[5])
@@ -81,9 +81,9 @@ describe('YSDSDate tests', function () {
         '2018-04-05T12:00:00',
         '2018-04-05T12:00:00+0000',
         '2018-04-05T12:00:00+00:00',
-        '2018-04-05T12:00:00Z'
+        '2018-04-05T12:00:00Z',
     ].forEach((value, idx) => {
-        it('should parse ISO-like dates natively ' + idx, function() {
+        it('should parse ISO-like dates natively ' + idx, () => {
             const dt = YSDSDate.parse(value)!
             expect(dt.year).toBe(2018)
             expect(dt.month).toBe(4)
@@ -91,24 +91,24 @@ describe('YSDSDate tests', function () {
         })
     })
 
-    it('should parse mysql-like dates natively', function () {
+    it('should parse mysql-like dates natively', () => {
         const dt = YSDSDate.parse('2018-04-05 06:00:00')!
         expect(dt.year).toBe(2018)
         expect(dt.month).toBe(4)
         expect(dt.date).toBe(5)
     })
 
-    it('should not ignore format because of ISO-like date', function() {
+    it('should not ignore format because of ISO-like date', () => {
         const dt = YSDSDate.parse('2018-01-01', 'yee-boi')
         expect(dt).toBeUndefined()
     })
 
-    it('should return undefined on invalid dates', function () {
+    it('should return undefined on invalid dates', () => {
         const dt = YSDSDate.parse('2018-01-01YEEEEEEEEEEEEEE')
         expect(dt).toBeUndefined()
     })
 
-    it('should return 0 hours when parsing an ISO-like date', function () {
+    it('should return 0 hours when parsing an ISO-like date', () => {
         const dt = YSDSDate.parse('2019-03-14')
 
         expect(dt!.hour).toBe(0)
@@ -208,10 +208,10 @@ describe('ReplacementFormatter tests', () => {
 
 })
 
-describe('unicodeParser tests', function() {
+describe('unicodeParser tests', () => {
     const parser = unicodeParser
 
-    it('should parse correctly', function() {
+    it('should parse correctly', () => {
         const dt = parser.parse('2014-05-06 12:30:45', 'yyyy-MM-dd HH:mm:ss')!
         expect(dt).toBeTruthy()
         expect(dt.year).toBe(2014)
@@ -222,7 +222,7 @@ describe('unicodeParser tests', function() {
         expect(dt.second).toBe(45)
     })
 
-    it('should ignore non-matching characters', function() {
+    it('should ignore non-matching characters', () => {
         const dt = parser.parse('2014-03-02T06:03:04', 'yyyy-MM-dd')!
         expect(dt).toBeTruthy()
         expect(dt.year).toBe(2014)
@@ -230,12 +230,12 @@ describe('unicodeParser tests', function() {
         expect(dt.date).toBe(2)
     })
 
-    it('should return undefined on non-matching pattern', function() {
+    it('should return undefined on non-matching pattern', () => {
         const dt = parser.parse('2019-01', 'yyyy-MM-dd')
         expect(dt).toBeUndefined()
     })
 
-    it('should parse correctly from cache', function() {
+    it('should parse correctly from cache', () => {
         parser.parse('2018-01-01', 'yyyy-MM-dd')
 
         const dt = parser.parse('2017-02-03', 'yyyy-MM-dd')!
@@ -245,7 +245,7 @@ describe('unicodeParser tests', function() {
         expect(dt.date).toBe(3)
     });
 
-    it('should let empty fields be 0', function () {
+    it('should let empty fields be 0', () => {
         const dt = parser.parse('2017-02-03 06', 'yyyy-MM-dd HH')!
         expect(dt.hour).toBe(6)
         expect(dt.minute).toBe(0)
@@ -258,7 +258,7 @@ describe('unicodeParser tests', function() {
         '2019-03-14T23:15:00+11:00',
         '2019-03-14T23:15:00+11:30',
     ].forEach((value, idx) => {
-        it('parsing timezones should behave like Date.parse() ' + idx, function () {
+        it('parsing timezones should behave like Date.parse() ' + idx, () => {
             const parsed = parser.parse(value, 'yyyy-MM-ddTHH:mm:ssxxx')
             const dt = new Date(value)
 
@@ -273,7 +273,7 @@ describe('unicodeParser tests', function() {
 
 })
 
-describe('unicodeFormatter tests', function() {
+describe('unicodeFormatter tests', () => {
     const dt = new YSDSDate(2015, 3, 4, 5, 6, 7)
 
     const formats = [
@@ -295,17 +295,17 @@ describe('unicodeFormatter tests', function() {
 
     for (let i = 0; i < formats.length; ++i) {
         const fmt = formats[i]
-        it(`should format correctly ${i}`, function() {
+        it(`should format correctly ${i}`, () => {
             expect(unicodeFormatter.format(dt, fmt[0])).toBe(fmt[1])
         })
     }
 
-    it('should format timezone correctly', function() {
+    it('should format timezone correctly', () => {
         const pattern = /[+-]\d{4} [+-]\d{2}:\d{2}/
         expect(pattern.test(unicodeFormatter.format(dt, 'xx xxx'))).toBe(true)
     })
 
-    it('should format 12-hour clock correctly', function() {
+    it('should format 12-hour clock correctly', () => {
         expect(unicodeFormatter.format(new YSDSDate(2000, 1, 1, 0, 0, 0), 'h')).toBe('12')
         expect(unicodeFormatter.format(new YSDSDate(2000, 1, 1, 1, 0, 0), 'h')).toBe('1')
         expect(unicodeFormatter.format(new YSDSDate(2000, 1, 1, 12, 0, 0), 'h')).toBe('12')

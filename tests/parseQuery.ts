@@ -1,8 +1,8 @@
 import {parseQuery} from "../src/parseQuery"
 
-describe('parseQuery tests', function () {
+describe('parseQuery tests', () => {
 
-    it('should parse simple parameters', function () {
+    it('should parse simple parameters', () => {
         const parsed = parseQuery('yee=boi')
 
         expect(parsed).toEqual({
@@ -10,7 +10,7 @@ describe('parseQuery tests', function () {
         })
     })
 
-    it('should parse multiple parameters', function () {
+    it('should parse multiple parameters', () => {
         const parsed = parseQuery('one=two&three=four')
 
         expect(parsed).toEqual({
@@ -19,7 +19,7 @@ describe('parseQuery tests', function () {
         })
     })
 
-    it('should disregard question mark in front of query', function () {
+    it('should disregard question mark in front of query', () => {
         const parsed = parseQuery('?yee=boi')
 
         expect(parsed).toEqual({
@@ -27,7 +27,7 @@ describe('parseQuery tests', function () {
         })
     })
 
-    it('should parse parameters without values as empty string', function () {
+    it('should parse parameters without values as empty string', () => {
         const parsed = parseQuery('yee&boi')
 
         expect(parsed).toEqual({
@@ -36,7 +36,7 @@ describe('parseQuery tests', function () {
         })
     })
 
-    it('should URL decode values', function () {
+    it('should URL decode values', () => {
         const parsed = parseQuery('yee=%2Byee')
 
         expect(parsed).toEqual({
