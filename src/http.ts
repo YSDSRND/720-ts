@@ -33,36 +33,36 @@ export const enum Status {
     InternalServerError = 500,
 }
 
-export class XMLHttpRequestBackend implements Backend {
+export function buildUrl(base: string, query: Map<StringLike | ReadonlyArray<StringLike>>): string {
+    const params: Array<{ key: string, value: string }> = []
 
-    protected buildUrlWithParameters(base: string, query: Map<StringLike | ReadonlyArray<StringLike>>): string {
-        const params: Array<{ key: string, value: string }> = []
+    for (const key in query) {
+        // serialize array values like so:
+        // name[]=bobby&name[]=jean
+        let values = query[key]
+        let suffix = '[]'
 
-        for (const key in query) {
-            // serialize array values like so:
-            // name[]=bobby&name[]=jean
-            let values = query[key]
-            let suffix = '[]'
-
-            if (!Array.isArray(values)) {
-                values = [values]
-                suffix = ''
-            }
-
-            params.push(...(values as ReadonlyArray<StringLike>).map(value => {
-                return {
-                    key: key + suffix,
-                    value: encodeURIComponent(value.toString()),
-                }
-            }))
+        if (!Array.isArray(values)) {
+            values = [values]
+            suffix = ''
         }
 
-        const queryString = params
-            .map(pair => `${pair.key}=${pair.value}`)
-            .join('&')
-
-        return queryString !== '' ? base + '?' + queryString : base
+        params.push(...(values as ReadonlyArray<StringLike>).map(value => {
+            return {
+                key: key + suffix,
+                value: encodeURIComponent(value.toString()),
+            }
+        }))
     }
+
+    const queryString = params
+        .map(pair => `${pair.key}=${pair.value}`)
+        .join('&')
+
+    return base + (queryString !== '' ? '?' + queryString : '')
+}
+
+export class XMLHttpRequestBackend implements Backend {
 
     protected extractHeaders(data: string) {
         const lines = data.trim().split('\n')
@@ -98,7 +98,7 @@ export class XMLHttpRequestBackend implements Backend {
             const req = new XMLHttpRequest()
             this.attachHandlers(req, resolve, reject)
 
-            req.open(request.method, this.buildUrlWithParameters(request.url, request.query!), true)
+            req.open(request.method, buildUrl(request.url, request.query!), true)
             req.responseType = request.responseType || ''
 
             Object.keys(request.headers!).forEach(key => {

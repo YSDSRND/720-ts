@@ -1,4 +1,4 @@
-import {HttpClient, MockBackend, XMLHttpRequestBackend} from "../src/http"
+import {buildUrl, HttpClient, MockBackend, XMLHttpRequestBackend} from "../src/http"
 
 describe('HttpClient tests', () => {
 
@@ -77,4 +77,36 @@ describe('XMLHttpRequestBackend tests', () => {
         })
     })
 
+})
+
+describe('buildUrl tests', () => {
+    it('should serialize single arguments properly', () => {
+        const url = buildUrl('http://google.com', {
+            yee: 'boi',
+        })
+        expect(url).toBe('http://google.com?yee=boi')
+    })
+
+    it('should serialize multiple arguments properly', () => {
+        const url = buildUrl('http://google.com', {
+            yee: 'boi',
+            boi: 'yee',
+        })
+        expect(url).toBe('http://google.com?yee=boi&boi=yee')
+    })
+
+    it('should URL-encode arguments', () => {
+        const url = buildUrl('http://google.com', {
+            yee: '&boi',
+        })
+        expect(url).toBe('http://google.com?yee=%26boi')
+    })
+
+    it('should accept array-like arguments', () => {
+        const url = buildUrl('http://google.com', {
+            yee: [1, 2, 3],
+        })
+
+        expect(url).toBe('http://google.com?yee[]=1&yee[]=2&yee[]=3')
+    })
 })
