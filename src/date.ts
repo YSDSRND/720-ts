@@ -312,7 +312,11 @@ function parseTimezoneOffset(value: string): number {
 }
 
 const timezoneMatchHandler: MatchHandler = (match, date) => {
-    const localOffset = (new Date()).getTimezoneOffset()
+    // note that we're fetching the timezone offset
+    // from the supplied date and not a new object. this
+    // is intentional because the time zone offset may
+    // change depending on the date (DST).
+    const localOffset = date.timezoneOffset
     const offsetMinutes = parseTimezoneOffset(match)
     const diff = offsetMinutes - localOffset
     return date.add(DateComponent.Minute, diff)
