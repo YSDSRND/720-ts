@@ -285,14 +285,6 @@ export class PatternParser implements DateParserInterface {
 
         return dt
     }
-
-    public static matchHandlerForComponent(component: DateComponent): MatchHandler {
-        return (match, current) => {
-            return current.withComponent(
-                component, parseInt(match)
-            )
-        }
-    }
 }
 
 const timezonePattern = /Z|(?:[+-]\d{2}:?\d{2})/
@@ -322,13 +314,21 @@ const timezoneMatchHandler: MatchHandler = (match, date) => {
     return date.add(DateComponent.Minute, diff)
 }
 
+function matchHandlerForComponent(component: DateComponent): MatchHandler {
+    return (match, current) => {
+        return current.withComponent(
+            component, parseInt(match)
+        )
+    }
+}
+
 export const unicodeParser = new PatternParser({
-    yyyy: ['\\d{4}', PatternParser.matchHandlerForComponent(DateComponent.Year)],
-    MM: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Month)],
-    dd: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Date)],
-    HH: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Hour)],
-    mm: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Minute)],
-    ss: ['\\d{2}', PatternParser.matchHandlerForComponent(DateComponent.Second)],
+    yyyy: ['\\d{4}', matchHandlerForComponent(DateComponent.Year)],
+    MM: ['\\d{2}', matchHandlerForComponent(DateComponent.Month)],
+    dd: ['\\d{2}', matchHandlerForComponent(DateComponent.Date)],
+    HH: ['\\d{2}', matchHandlerForComponent(DateComponent.Hour)],
+    mm: ['\\d{2}', matchHandlerForComponent(DateComponent.Minute)],
+    ss: ['\\d{2}', matchHandlerForComponent(DateComponent.Second)],
     xxx: ['[+-]\\d{2}:\\d{2}', timezoneMatchHandler],
     xx: ['[+-]\\d{2}\\d{2}', timezoneMatchHandler],
     XXX: ['Z|(?:[+-]\\d{2}:\\d{2})', timezoneMatchHandler],
