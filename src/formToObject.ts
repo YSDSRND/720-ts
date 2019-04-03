@@ -20,7 +20,7 @@ export const defaultValueGetter: ValueGetter = element => {
 // name=hello    <-- string
 // name=hello[]  <-- array
 // name=hello[0] <-- array
-const namePattern = /([^\[\]]+)(?:\[([^\[\]]+)\])?$/
+const namePattern = /([^\[\]]+)(?:\[([^\[\]]*)\])?$/
 
 interface WriteArrayLike<T> {
     length: number
@@ -38,14 +38,23 @@ export function formToObject(container: Element, getValue: ValueGetter = default
             const value = getValue(child)
 
             // is our name a nested array or object-like value?
-            if (matches[2]) {
+            if (typeof matches[2] !== 'undefined') {
                 const keyName = matches[2]
 
                 if (!carry.hasOwnProperty(name)) {
-                    carry[name] = /^\d+$/.test(keyName) ? [] : {}
+                    carry[name] = !keyName || /^\d+$/.test(keyName) ? [] : {}
                 }
 
-                (carry[name] as WriteArrayLike<FormValue>)[keyName as any] = value
+                // if keyName is falsy we're setting an array-like property without
+                // an explicit key. this is common when just pushing stuff into an array.
+                //
+                //   name=my_values[]
+                //
+                if (!keyName) {
+                    (carry[name] as Array<FormValue>).push(value)
+                } else {
+                    (carry[name] as WriteArrayLike<FormValue>)[keyName as any] = value
+                }
             } else {
                 carry[name] = value
             }

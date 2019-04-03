@@ -33,6 +33,12 @@ describe('formToObject tests', () => {
                     value: el,
                 })
             }),
+            ...range(0, 3).map(i => {
+                return createElement<HTMLInputElement>('input', {
+                    name: `f[]`,
+                    value: i.toString(),
+                })
+            }),
         ])
     })
 
@@ -49,6 +55,7 @@ describe('formToObject tests', () => {
                 b: 'b',
                 c: 'c',
             },
+            f: ['0', '1', '2'],
         })
     })
 
@@ -70,6 +77,11 @@ describe('formToObject tests', () => {
                 b: 'b_YEE',
                 c: 'c_YEE',
             },
+            f: [
+                '0_YEE',
+                '1_YEE',
+                '2_YEE',
+            ],
         })
     })
 })
