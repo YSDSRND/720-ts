@@ -19,13 +19,19 @@ describe('formToObject tests', () => {
             }),
             ...range(0, 3).map(i => {
                 return createElement<HTMLInputElement>('input', {
-                    name: 'c[]',
+                    name: `c[${i}]`,
                     value: i.toString(),
                 })
             }),
             createElement<HTMLTextAreaElement>('textarea', {
                 name: 'd',
                 value: 'some_text',
+            }),
+            ...['a', 'b', 'c'].map(el => {
+                return createElement<HTMLInputElement>('input', {
+                    name: `e[${el}]`,
+                    value: el,
+                })
             }),
         ])
     })
@@ -38,6 +44,11 @@ describe('formToObject tests', () => {
             b: true,
             c: ['0', '1', '2'],
             d: 'some_text',
+            e: {
+                a: 'a',
+                b: 'b',
+                c: 'c',
+            },
         })
     })
 
@@ -54,6 +65,11 @@ describe('formToObject tests', () => {
                 '2_YEE',
             ],
             d: 'some_text_YEE',
+            e: {
+                a: 'a_YEE',
+                b: 'b_YEE',
+                c: 'c_YEE',
+            },
         })
     })
 })
