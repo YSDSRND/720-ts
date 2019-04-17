@@ -25,12 +25,13 @@ const enum FormattingCharacter {
     ThousandsSeparator = ',',
     DecimalSeparator = '.',
     LiteralDelimiter = '"',
+    Percentage = '%',
 }
 
 function parseFormat(format: string, options: Options): Format {
     const out = {
-        containsThousandsSeparator: format.indexOf(',') !== -1,
-        isPercentage: format.indexOf('%') !== -1,
+        containsThousandsSeparator: false,
+        isPercentage: false,
 
         // count the number of decimals specifiers in the format.
         decimalDigits: (format
@@ -44,7 +45,6 @@ function parseFormat(format: string, options: Options): Format {
     let buffer = ''
     let isReadingLiteral = false
     let isReadingDecimal = out.decimalDigits > 0
-    let isReadingInteger = !isReadingDecimal
     let decimalIndex = 0
     let integerIndex = 0
 
@@ -63,12 +63,15 @@ function parseFormat(format: string, options: Options): Format {
             case FormattingCharacter.RequiredDigit:
                 out.specifiers.push({
                     required: chr === FormattingCharacter.RequiredDigit,
-                    integerIndex: isReadingInteger ? integerIndex++ : undefined,
+                    integerIndex: isReadingDecimal ? undefined : integerIndex++,
                     decimalIndex: isReadingDecimal ? decimalIndex++ : undefined,
                 })
                 break
             case FormattingCharacter.ThousandsSeparator:
                 out.containsThousandsSeparator = true
+                break
+            case FormattingCharacter.Percentage:
+                out.isPercentage = true
                 break
             case FormattingCharacter.DecimalSeparator:
                 // we're assuming that the decimal format
@@ -76,7 +79,6 @@ function parseFormat(format: string, options: Options): Format {
                 // string. if that's not the case this will
                 // probably break.
                 isReadingDecimal = false
-                isReadingInteger = true
                 out.specifiers.push({
                     required: true,
                     literalValue: options.decimalSeparator,
