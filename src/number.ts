@@ -14,6 +14,7 @@ interface FormattingSpecifier {
 
 interface Format {
     containsThousandsSeparator: boolean
+    isPercentage: boolean
     decimalDigits: number
     specifiers: ReadonlyArray<FormattingSpecifier>
 }
@@ -28,7 +29,8 @@ const enum FormattingCharacter {
 
 function parseFormat(format: string, options: Options): Format {
     const out = {
-        containsThousandsSeparator: /,/.test(format),
+        containsThousandsSeparator: format.indexOf(',') !== -1,
+        isPercentage: format.indexOf('%') !== -1,
 
         // count the number of decimals specifiers in the format.
         decimalDigits: (format
@@ -116,7 +118,7 @@ export class NumberFormatter {
         // it will be inserted by the formatting pattern later.
         // we also remove leading zeros so the number formatting
         // sequence can control the padding.
-        const digits = value
+        const digits = (value * (this.parsedFormat.isPercentage ? 100 : 1))
             .toFixed(this.parsedFormat.decimalDigits)
             .replace(/[^\d]/g, '')
             .replace(/^0+/g, '')
@@ -202,6 +204,10 @@ export class NumberFormatter {
                     integerIndex++
                 }
             }
+        }
+
+        if (this.parsedFormat.isPercentage) {
+            out += '%'
         }
 
         return out
