@@ -8,14 +8,14 @@ interface Options {
 interface FormattingSpecifier {
     required: boolean
     integerIndex?: number
-    decimalIndex?: number
+    fractionIndex?: number
     literalValue?: string
 }
 
 interface Format {
     containsThousandsSeparator: boolean
-    isPercentage: boolean
-    decimalDigits: number
+    scale: number
+    fractionDigits: number
     specifiers: ReadonlyArray<FormattingSpecifier>
 }
 
@@ -26,15 +26,16 @@ const enum FormattingCharacter {
     DecimalSeparator = '.',
     LiteralDelimiter = '"',
     Percentage = '%',
+    Space = ' ',
 }
 
 function parseFormat(format: string, options: Options): Format {
     const out = {
         containsThousandsSeparator: false,
-        isPercentage: false,
+        scale: 1,
 
-        // count the number of decimals specifiers in the format.
-        decimalDigits: (format
+        // count the number of fraction specifiers in the format.
+        fractionDigits: (format
             .split('.')[1] || '')
             .replace(/[^0#]/g, '')
             .length,
@@ -44,8 +45,8 @@ function parseFormat(format: string, options: Options): Format {
 
     let buffer = ''
     let isReadingLiteral = false
-    let isReadingDecimal = out.decimalDigits > 0
-    let decimalIndex = 0
+    let isReadingFraction = out.fractionDigits > 0
+    let fractionIndex = 0
     let integerIndex = 0
 
     for (let i = format.length - 1; i >= 0; --i) {
@@ -63,22 +64,26 @@ function parseFormat(format: string, options: Options): Format {
             case FormattingCharacter.RequiredDigit:
                 out.specifiers.push({
                     required: chr === FormattingCharacter.RequiredDigit,
-                    integerIndex: isReadingDecimal ? undefined : integerIndex++,
-                    decimalIndex: isReadingDecimal ? decimalIndex++ : undefined,
+                    integerIndex: isReadingFraction ? undefined : integerIndex++,
+                    fractionIndex: isReadingFraction ? fractionIndex++ : undefined,
                 })
                 break
             case FormattingCharacter.ThousandsSeparator:
                 out.containsThousandsSeparator = true
                 break
             case FormattingCharacter.Percentage:
-                out.isPercentage = true
+                out.scale = 100
+                out.specifiers.unshift({
+                    required: true,
+                    literalValue: '%',
+                })
                 break
             case FormattingCharacter.DecimalSeparator:
-                // we're assuming that the decimal format
+                // we're assuming that the fraction format
                 // actually occurs at the end of the format
                 // string. if that's not the case this will
                 // probably break.
-                isReadingDecimal = false
+                isReadingFraction = false
                 out.specifiers.push({
                     required: true,
                     literalValue: options.decimalSeparator,
@@ -95,10 +100,21 @@ function parseFormat(format: string, options: Options): Format {
                     buffer = ''
                 }
                 break
+            case FormattingCharacter.Space:
+                out.specifiers.push({
+                    required: true,
+                    literalValue: ' ',
+                })
+                break
         }
     }
 
     return out
+}
+
+function round(value: number, fractionDigits: number): number {
+    const scale = Math.pow(10, fractionDigits)
+    return Math.round(value * scale) / scale
 }
 
 // a class for excel-style number formatting.
@@ -120,8 +136,8 @@ export class NumberFormatter {
         // it will be inserted by the formatting pattern later.
         // we also remove leading zeros so the number formatting
         // sequence can control the padding.
-        const digits = (value * (this.parsedFormat.isPercentage ? 100 : 1))
-            .toFixed(this.parsedFormat.decimalDigits)
+        const digits = round(value * this.parsedFormat.scale, this.parsedFormat.fractionDigits)
+            .toFixed(this.parsedFormat.fractionDigits)
             .replace(/[^\d]/g, '')
             .replace(/^0+/g, '')
             .split('')
@@ -136,7 +152,7 @@ export class NumberFormatter {
         // format.
         const minimumDigitsToWrite = Math.max(digits.length, specifiers.reduce((carry, item) => {
             if (typeof item.integerIndex !== 'undefined' ||
-                typeof item.decimalIndex !== 'undefined' ) {
+                typeof item.fractionIndex !== 'undefined') {
                 return carry + 1
             }
             return carry
@@ -192,7 +208,11 @@ export class NumberFormatter {
                 // if the next digit is included and its integer index
                 // is evenly divisible by 3 we need to insert a thousands
                 // separator before.
-                if (shouldIncludeDigit && typeof integerIndex !== 'undefined' && integerIndex > 0 && integerIndex % 3 === 0) {
+                if (shouldIncludeDigit &&
+                    this.parsedFormat.containsThousandsSeparator &&
+                    typeof integerIndex !== 'undefined' &&
+                    integerIndex > 0 &&
+                    integerIndex % 3 === 0) {
                     out = this.options.thousandsSeparator + out
                 }
 
@@ -206,10 +226,6 @@ export class NumberFormatter {
                     integerIndex++
                 }
             }
-        }
-
-        if (this.parsedFormat.isPercentage) {
-            out += '%'
         }
 
         return out
