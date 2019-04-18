@@ -25,6 +25,8 @@ describe('NumberFormatter tests', () => {
         ['0%', 0.553, '55%'],
 
         ['0 0 0 0', 123, '0 1 2 3'],
+
+        ['#', 123.50, '124'],
     ]
 
     cases.forEach((item, idx) => {

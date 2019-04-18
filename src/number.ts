@@ -1,4 +1,5 @@
 import {assign} from "./assign";
+import {find} from "./find";
 
 interface Options {
     decimalSeparator: string
@@ -6,7 +7,8 @@ interface Options {
 }
 
 interface FormattingSpecifier {
-    required: boolean
+    isRequired?: boolean
+    isLastNumericSpecifier?: boolean
     integerIndex?: number
     fractionIndex?: number
     literalValue?: string
@@ -35,8 +37,7 @@ function parseFormat(format: string, options: Options): Format {
         scale: 1,
 
         // count the number of fraction specifiers in the format.
-        fractionDigits: (format
-            .split('.')[1] || '')
+        fractionDigits: (format.split(FormattingCharacter.DecimalSeparator)[1] || '')
             .replace(/[^0#]/g, '')
             .length,
 
@@ -63,7 +64,7 @@ function parseFormat(format: string, options: Options): Format {
             case FormattingCharacter.OptionalDigit:
             case FormattingCharacter.RequiredDigit:
                 out.specifiers.push({
-                    required: chr === FormattingCharacter.RequiredDigit,
+                    isRequired: chr === FormattingCharacter.RequiredDigit,
                     integerIndex: isReadingFraction ? undefined : integerIndex++,
                     fractionIndex: isReadingFraction ? fractionIndex++ : undefined,
                 })
@@ -74,7 +75,6 @@ function parseFormat(format: string, options: Options): Format {
             case FormattingCharacter.Percentage:
                 out.scale = 100
                 out.specifiers.unshift({
-                    required: true,
                     literalValue: '%',
                 })
                 break
@@ -85,7 +85,6 @@ function parseFormat(format: string, options: Options): Format {
                 // probably break.
                 isReadingFraction = false
                 out.specifiers.push({
-                    required: true,
                     literalValue: options.decimalSeparator,
                 })
                 break
@@ -94,7 +93,6 @@ function parseFormat(format: string, options: Options): Format {
 
                 if (!isReadingLiteral) {
                     out.specifiers.push({
-                        required: true,
                         literalValue: buffer,
                     })
                     buffer = ''
@@ -102,11 +100,19 @@ function parseFormat(format: string, options: Options): Format {
                 break
             case FormattingCharacter.Space:
                 out.specifiers.push({
-                    required: true,
                     literalValue: ' ',
                 })
                 break
         }
+    }
+
+    const last = out.specifiers.filter(item => {
+        return typeof item.integerIndex !== 'undefined'
+            || typeof item.fractionIndex !== 'undefined'
+    })
+
+    if (last.length) {
+        last[last.length - 1].isLastNumericSpecifier = true
     }
 
     return out
@@ -163,12 +169,7 @@ export class NumberFormatter {
         // when we output a thousands separator. if we need to
         // output more digits than our format specifies we will
         // use this value as a starting point.
-        const lastNumericSpecifier = (() => {
-            const numeric = specifiers.filter(item => {
-                return typeof item.integerIndex !== 'undefined'
-            })
-            return numeric[numeric.length - 1]
-        })()
+        const lastNumericSpecifier = find(specifiers, spec => spec.isLastNumericSpecifier || false)
 
         let out = ''
         let digitIndex = 0
@@ -194,16 +195,15 @@ export class NumberFormatter {
             // for the current format specifier. that case occurs
             // when we're formatting a large number with a smaller
             // format specifier.
-            for (let j = digitIndex; j < writeUntilIndex; ++j) {
+            for (; digitIndex < writeUntilIndex; ++digitIndex) {
                 // note the null coalesce here. sometimes the formatting
                 // sequence is longer than the number which means that
                 // we should zero-pad on the left.
-                const digit = digits[j] || '0'
+                const digit = digits[digitIndex] || '0'
 
-                // include the digit if it is explicitly marked as required
+                // include the digit if it is explicitly marked as isRequired
                 // or if we have a digit specified for this position.
-                const shouldIncludeDigit = fmt.required
-                    || typeof digits[j] !== 'undefined'
+                const shouldIncludeDigit = fmt.isRequired || typeof digits[digitIndex] !== 'undefined'
 
                 // if the next digit is included and its integer index
                 // is evenly divisible by 3 we need to insert a thousands
@@ -220,9 +220,7 @@ export class NumberFormatter {
                     out = digit + out
                 }
 
-                digitIndex++
-
-                if (integerIndex) {
+                if (typeof integerIndex !== 'undefined') {
                     integerIndex++
                 }
             }
