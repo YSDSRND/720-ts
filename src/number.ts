@@ -15,7 +15,7 @@ interface FormattingSpecifier {
 }
 
 interface Format {
-    containsThousandsSeparator: boolean
+    groupDigits: number
     scale: number
     fractionDigits: number
     specifiers: ReadonlyArray<FormattingSpecifier>
@@ -33,7 +33,7 @@ const enum FormattingCharacter {
 
 function parseFormat(format: string, options: Options): Format {
     const out = {
-        containsThousandsSeparator: false,
+        groupDigits: 0,
         scale: 1,
 
         // count the number of fraction specifiers in the format.
@@ -49,6 +49,8 @@ function parseFormat(format: string, options: Options): Format {
     let isReadingFraction = out.fractionDigits > 0
     let fractionIndex = 0
     let integerIndex = 0
+    let shouldCountGroupDigits = out.fractionDigits === 0
+    let groupDigits = 0
 
     for (let i = format.length - 1; i >= 0; --i) {
         const chr = format[i]
@@ -68,9 +70,18 @@ function parseFormat(format: string, options: Options): Format {
                     integerIndex: isReadingFraction ? undefined : integerIndex++,
                     fractionIndex: isReadingFraction ? fractionIndex++ : undefined,
                 })
+
+                if (shouldCountGroupDigits) {
+                    groupDigits++
+                }
                 break
             case FormattingCharacter.ThousandsSeparator:
-                out.containsThousandsSeparator = true
+                out.groupDigits = groupDigits
+
+                // when we hit the thousands separator
+                // we know how many digits should be
+                // grouped together. stop counting here.
+                shouldCountGroupDigits = false
                 break
             case FormattingCharacter.Percentage:
                 out.scale = 100
@@ -87,6 +98,10 @@ function parseFormat(format: string, options: Options): Format {
                 out.specifiers.push({
                     literalValue: options.decimalSeparator,
                 })
+
+                // start counting the number of digits that
+                // should be grouped together.
+                shouldCountGroupDigits = true
                 break
             case FormattingCharacter.LiteralDelimiter:
                 isReadingLiteral = !isReadingLiteral
@@ -209,10 +224,10 @@ export class NumberFormatter {
                 // is evenly divisible by 3 we need to insert a thousands
                 // separator before.
                 if (shouldIncludeDigit &&
-                    this.parsedFormat.containsThousandsSeparator &&
+                    this.parsedFormat.groupDigits > 0 &&
                     typeof integerIndex !== 'undefined' &&
                     integerIndex > 0 &&
-                    integerIndex % 3 === 0) {
+                    integerIndex % this.parsedFormat.groupDigits === 0) {
                     out = this.options.thousandsSeparator + out
                 }
 
