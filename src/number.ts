@@ -218,20 +218,21 @@ export class NumberFormatter {
 
                 // include the digit if it is explicitly marked as isRequired
                 // or if we have a digit specified for this position.
-                const shouldIncludeDigit = fmt.isRequired || typeof digits[digitIndex] !== 'undefined'
+                const shouldWriteDigit = fmt.isRequired || typeof digits[digitIndex] !== 'undefined'
+                const shouldWriteSeparator = shouldWriteDigit
+                    && this.parsedFormat.groupDigits > 0
+                    && typeof integerIndex !== 'undefined'
+                    && integerIndex > 0
+                    && integerIndex % this.parsedFormat.groupDigits === 0
 
                 // if the next digit is included and its integer index
                 // is evenly divisible by 3 we need to insert a thousands
                 // separator before.
-                if (shouldIncludeDigit &&
-                    this.parsedFormat.groupDigits > 0 &&
-                    typeof integerIndex !== 'undefined' &&
-                    integerIndex > 0 &&
-                    integerIndex % this.parsedFormat.groupDigits === 0) {
+                if (shouldWriteSeparator) {
                     out = this.options.thousandsSeparator + out
                 }
 
-                if (shouldIncludeDigit) {
+                if (shouldWriteDigit) {
                     out = digit + out
                 }
 
