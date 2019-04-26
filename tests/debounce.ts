@@ -54,4 +54,32 @@ describe('debounce tests', () => {
         }, 300)
     })
 
+    it('should return a promise', (done) => {
+        fn()
+        fn()
+        fn().then(res => {
+            expect(calls).toBe(1)
+            done()
+        })
+    })
+
+    it('should call .then() with same value as previous invocations', (done) => {
+        fn().then(res => {
+            expect(res).toBe(1)
+        })
+        fn().then(res => {
+            expect(res).toBe(1)
+        })
+        fn().then(res => {
+            expect(res).toBe(1)
+        })
+
+        setTimeout(() => {
+            fn().then(res => {
+                expect(res).toBe(2)
+                done()
+            })
+        }, 300)
+    })
+
 })
