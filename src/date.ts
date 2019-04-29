@@ -96,6 +96,10 @@ export class YSDSDate {
         return this.getComponent(DateComponent.Millisecond)
     }
 
+    public get timestamp(): number {
+        return this.backend.getTime() / 1_000
+    }
+
     public get timezoneOffset(): number {
         return this.backend.getTimezoneOffset()
     }
