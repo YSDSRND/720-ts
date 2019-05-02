@@ -2,6 +2,7 @@ import {NumberFormatter} from "../src/number";
 
 describe('NumberFormatter tests', () => {
     const cases: ReadonlyArray<[string, number, string]> = [
+        ['#,##0.00', 0, '0.00'],
         ['#,##0.00', 1.50, '1.50'],
         ['#,###.00', 0.50, '.50'],
         ['#,##0.00', 1.55, '1.55'],
@@ -29,6 +30,10 @@ describe('NumberFormatter tests', () => {
         ['0 0 0 0', 123, '0 1 2 3'],
 
         ['#', 123.50, '124'],
+        ['#,##0', +Infinity, '0'],
+        ['#,##0', -Infinity, '0'],
+        ['#,##0', Infinity, '0'],
+        ['#,##0', NaN, '0'],
     ]
 
     cases.forEach((item, idx) => {
