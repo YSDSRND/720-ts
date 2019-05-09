@@ -1,8 +1,8 @@
-export function createElement<T extends HTMLElement>(
-    type: string,
-    props: Partial<T> = {},
-    children: ReadonlyArray<string | Node> = []): T {
-    const element = document.createElement(type) as T
+export function createElement<K extends keyof HTMLElementTagNameMap>(
+    type: K,
+    props: Partial<HTMLElementTagNameMap[K]> = {},
+    children: ReadonlyArray<string | Node> = []): HTMLElementTagNameMap[K] {
+    const element = document.createElement(type) as HTMLElementTagNameMap[K]
 
     for (const key in props) {
         const value = props[key]

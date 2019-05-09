@@ -7,34 +7,34 @@ describe('formToObject tests', () => {
 
     beforeEach(() => {
         container = createElement('form', {}, [
-            createElement<HTMLInputElement>('input', {
+            createElement('input', {
                 name: 'a',
                 value: 'OK',
             }),
-            createElement<HTMLInputElement>('input', {
+            createElement('input', {
                 name: 'b',
                 type: 'checkbox',
                 checked: true,
                 value: '',
             }),
             ...range(0, 3).map(i => {
-                return createElement<HTMLInputElement>('input', {
+                return createElement('input', {
                     name: `c[${i}]`,
                     value: i.toString(),
                 })
             }),
-            createElement<HTMLTextAreaElement>('textarea', {
+            createElement('textarea', {
                 name: 'd',
                 value: 'some_text',
             }),
             ...['a', 'b', 'c'].map(el => {
-                return createElement<HTMLInputElement>('input', {
+                return createElement('input', {
                     name: `e[${el}]`,
                     value: el,
                 })
             }),
             ...range(0, 3).map(i => {
-                return createElement<HTMLInputElement>('input', {
+                return createElement('input', {
                     name: `f[]`,
                     value: i.toString(),
                 })
