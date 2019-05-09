@@ -36,4 +36,14 @@ describe('createElement tests', () => {
         expect(el.childNodes[0].nodeName).toBe('#text')
         expect(el.innerText).toBe('Wowee')
     })
+
+    it('should append children before setting props', () => {
+        const el = createElement('select', { value: 'three' }, [
+            createElement('option', { value: 'one' }, ['one']),
+            createElement('option', { value: 'two' }, ['two']),
+            createElement('option', { value: 'three' }, ['three']),
+        ])
+
+        expect(el.selectedIndex).toBe(2)
+    })
 })

@@ -4,6 +4,13 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
     children: ReadonlyArray<string | Node> = []): HTMLElementTagNameMap[K] {
     const element = document.createElement(type) as HTMLElementTagNameMap[K]
 
+    for (const child of children) {
+        const node = typeof child === 'string'
+            ? document.createTextNode(child)
+            : child
+        element.appendChild(node)
+    }
+
     for (const key in props) {
         const value = props[key]
 
@@ -14,11 +21,6 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
             element[key] = value!
         }
     }
-
-    children.forEach(child => {
-        child = typeof child === 'string' ? document.createTextNode(child) : child
-        element.appendChild(child)
-    })
 
     return element
 }
