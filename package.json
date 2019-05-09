@@ -28,15 +28,15 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "@types/jasmine": "^3.3.9",
-    "jasmine-core": "^3.3.0",
-    "karma": "^4.0.1",
+    "@types/jasmine": "^3.3.12",
+    "jasmine-core": "^3.4.0",
+    "karma": "^4.1.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^2.0.1",
     "karma-junit-reporter": "^1.2.0",
     "karma-typescript": "^4.0.0",
     "promises-aplus-tests": "^2.1.2",
-    "tslint": "^5.13.1",
-    "typescript": "^3.3.3333"
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5"
   }
 }
