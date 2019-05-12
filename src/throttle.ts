@@ -11,7 +11,7 @@ export function throttle<T extends any[]>(func: VariadicFunc<T, any>, wait: numb
         }
 
         if (typeof timeout === 'undefined') {
-            timeout = setTimeout(later, wait)
+            timeout = window.setTimeout(later, wait)
         }
     }
 }

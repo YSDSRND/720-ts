@@ -17,8 +17,8 @@ export function debounce<T extends any[], U>(func: VariadicFunc<T, U | PromiseLi
             })
         }
 
-        clearTimeout(timeout)
-        timeout = setTimeout(later, wait)
+        window.clearTimeout(timeout)
+        timeout = window.setTimeout(later, wait)
 
         return new Promise(resolve => {
             resolveFns.push(resolve)

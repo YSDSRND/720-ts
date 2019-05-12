@@ -15,7 +15,7 @@ const enum State {
 }
 
 function nextTick(func: Func<void>) {
-    setTimeout(func, 0)
+    window.setTimeout(func, 0)
 }
 
 export function isPromiseLike(maybePromise: any): maybePromise is PromiseLike<any> {
