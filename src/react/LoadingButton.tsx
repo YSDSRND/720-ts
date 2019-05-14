@@ -2,9 +2,45 @@ import * as React from 'react'
 import {assign} from "../assign";
 import {Func1} from "../types";
 
+//
+// this component is a wrapper around the <button> element
+// that executes an asynchronous action on click and
+// automatically disables itself. when the action is complete
+// the button is enabled again.
+//
+// Usage:
+//
+// <LoadingButton
+//   execute={event => {
+//     event.preventDefault()
+//     return someAsyncAction()
+//   }}>
+//   My Button
+// </LoadingButton>
+//
+// In some cases you may want the button to disable itself
+// in response to an external value (promise). You may then
+// provide the "promise"-property to the button. The following
+// example will be disabled for 1 second after it renders:
+//
+// <LoadingButton
+//   promise={new Promise((resolve, reject) => {
+//     setTimeout(() => {
+//       resolve(true)
+//     }, 1000)
+//   })}
+//   execute={event => {
+//     event.preventDefault()
+//     return someAsyncAction()
+//   }}>
+//   My Button
+// </LoadingButton>
+//
+
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     execute: Func1<React.MouseEvent<HTMLButtonElement>, PromiseLike<unknown>>
     iconClass?: string
+    promise?: PromiseLike<unknown>
 }
 
 interface State {
@@ -21,7 +57,7 @@ export class LoadingButton extends React.Component<Props, State> {
         super(props, context)
 
         this.state = {
-            loading: false,
+            loading: typeof props.promise !== 'undefined',
         }
 
         this.done = this.done.bind(this)
@@ -45,10 +81,21 @@ export class LoadingButton extends React.Component<Props, State> {
 
     public componentDidMount(): void {
         this.isComponentMounted = true
+
+        if (this.props.promise) {
+            this.props.promise.then(this.done, this.done)
+        }
     }
 
     public componentWillUnmount(): void {
         this.isComponentMounted = false
+    }
+
+    public componentWillReceiveProps(nextProps: Props): void {
+        if (nextProps.promise) {
+            this.setState({ loading: true })
+            nextProps.promise.then(this.done, this.done)
+        }
     }
 
     public render() {
@@ -61,6 +108,7 @@ export class LoadingButton extends React.Component<Props, State> {
         delete p.onClick
         delete p.disabled
         delete p.iconClass
+        delete p.promise
 
         return <button
             onClick={this.onClick}
