@@ -110,15 +110,17 @@ export class LoadingButton extends React.Component<Props, State> {
         delete p.iconClass
         delete p.promise
 
-        return <button
-            onClick={this.onClick}
-            disabled={this.state.loading || this.props.disabled}
-            {...p}>
-            {this.props.children}
-            {this.state.loading
-                ? <span>&nbsp;<i className={p.iconClass || 'fa fa-cog fa-spin'} /></span>
-                : null
-            }
-        </button>
+        return (
+            <button
+                onClick={this.onClick}
+                disabled={this.state.loading || this.props.disabled}
+                {...p}>
+                {this.props.children}
+                {this.state.loading
+                    ? <span>&nbsp;<i className={p.iconClass || 'fa fa-cog fa-spin'} /></span>
+                    : null
+                }
+            </button>
+        )
     }
 }
