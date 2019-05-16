@@ -347,7 +347,7 @@ const twelveHourClockHours = [
 // these are indexed by the return value of Date.prototype.getDay
 // which returns 0-6 for sunday-monday.
 const daysOfWeek = [
-    7, 1, 2, 3, 4, 5, 6
+    7, 1, 2, 3, 4, 5, 6,
 ]
 
 // http://unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
@@ -503,6 +503,6 @@ export const phpToMomentConverter = new ReplacementConverter({
 })
 
 function getDateOfFirstWeek(year: number): YSDSDate {
-    let dt = new YSDSDate(year, 1, 4)
+    const dt = new YSDSDate(year, 1, 4)
     return dt.add(DateComponent.Date, 1 - parseInt(dt.format('e')))
 }
