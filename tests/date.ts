@@ -276,27 +276,35 @@ describe('unicodeParser tests', () => {
 describe('unicodeFormatter tests', () => {
     const dt = new YSDSDate(2015, 3, 4, 5, 6, 7)
 
-    const formats = [
-        ['yyyy', '2015'],
-        ['yy', '15'],
-        ['MM', '03'],
-        ['M', '3'],
-        ['dd', '04'],
-        ['d', '4'],
-        ['HH', '05'],
-        ['h', '5'],
-        ['hh', '05'],
-        ['mm', '06'],
-        ['ss', '07'],
-        ['a', 'am'],
-        ['yyyy-MM-dd', '2015-03-04'],
-        ['HH:mm:ss a', '05:06:07 am'],
+    const formats: ReadonlyArray<[YSDSDate, string, string]> = [
+        [dt, 'yyyy', '2015'],
+        [dt, 'yy', '15'],
+        [dt, 'MM', '03'],
+        [dt, 'M', '3'],
+        [dt, 'dd', '04'],
+        [dt, 'd', '4'],
+        [dt, 'HH', '05'],
+        [dt, 'h', '5'],
+        [dt, 'hh', '05'],
+        [dt, 'mm', '06'],
+        [dt, 'ss', '07'],
+        [dt, 'a', 'am'],
+        [dt, 'yyyy-MM-dd', '2015-03-04'],
+        [dt, 'HH:mm:ss a', '05:06:07 am'],
+        [dt, 'e', '3'],
+        [dt, 'ee', '03'],
+        [dt, 'w', '10'],
+        [new YSDSDate(2019, 5, 16), 'w', '20'],
+        [new YSDSDate(2019, 12, 30), 'w', '1'],
+        [new YSDSDate(2020, 1, 3), 'w', '1'],
+        [new YSDSDate(2016, 1, 1), 'w', '53'],
+        [new YSDSDate(2019, 2, 1), 'w', '5'],
     ]
 
     for (let i = 0; i < formats.length; ++i) {
         const fmt = formats[i]
         it(`should format correctly ${i}`, () => {
-            expect(unicodeFormatter.format(dt, fmt[0])).toBe(fmt[1])
+            expect(unicodeFormatter.format(fmt[0], fmt[1])).toBe(fmt[2])
         })
     }
 

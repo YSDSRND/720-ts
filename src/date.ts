@@ -344,19 +344,48 @@ const twelveHourClockHours = [
     12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
 ]
 
+// these are indexed by the return value of Date.prototype.getDay
+// which returns 0-6 for sunday-monday.
+const daysOfWeek = [
+    7, 1, 2, 3, 4, 5, 6
+]
+
 // http://unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
 export const unicodeFormatter = new ReplacementFormatter({
+    // 4-digit year
     yyyy: date => date.year,
+
+    // 2-digit year
     yy: date => date.year.toString().slice(-2),
+
+    // month of year, zero padded
     MM: date => padLeft(date.month.toString(), 2, '0'),
-    dd: date => padLeft(date.date.toString(), 2, '0'),
-    HH: date => padLeft(date.hour.toString(), 2, '0'),
-    hh: date => padLeft(twelveHourClockHours[date.hour].toString(), 2, '0'),
-    h: date => twelveHourClockHours[date.hour],
-    mm: date => padLeft(date.minute.toString(), 2, '0'),
-    ss: date => padLeft(date.second.toString(), 2, '0'),
-    d: date => date.date,
+
+    // month of year
     M: date => date.month,
+
+    // date of month, zero padded
+    dd: date => padLeft(date.date.toString(), 2, '0'),
+
+    // date of month
+    d: date => date.date,
+
+    // hour, 24h, zero padded
+    HH: date => padLeft(date.hour.toString(), 2, '0'),
+
+    // hour, 12h, zero padded
+    hh: date => padLeft(twelveHourClockHours[date.hour].toString(), 2, '0'),
+
+    // hour, 12h
+    h: date => twelveHourClockHours[date.hour],
+
+    // minute, zero padded
+    mm: date => padLeft(date.minute.toString(), 2, '0'),
+
+    // second, zero padded
+    ss: date => padLeft(date.second.toString(), 2, '0'),
+
+    // time zone offset, colon separated
     xxx: date => {
         const offset = date.timezoneOffset
         const sign = offset <= 0 ? '+' : '-'
@@ -367,9 +396,13 @@ export const unicodeFormatter = new ReplacementFormatter({
             ':' +
             padLeft(minutes.toString(), 2, '0')
     },
+
+    // time zone offset, no separator between hour/minutes
     xx: (date, fmt) => {
         return fmt.format(date, 'xxx').replace(':', '')
     },
+
+    // time zone offset, colon separated, Z for 0
     XXX: (date, fmt) => {
         const offset = date.timezoneOffset
         if (offset === 0) {
@@ -377,6 +410,8 @@ export const unicodeFormatter = new ReplacementFormatter({
         }
         return fmt.format(date, 'xxx')
     },
+
+    // time zone offset, no separator between hour/minutes, Z for 0
     XX: (date, fmt) => {
         const offset = date.timezoneOffset
         if (offset === 0) {
@@ -384,7 +419,41 @@ export const unicodeFormatter = new ReplacementFormatter({
         }
         return fmt.format(date, 'xx')
     },
+
+    // meridiem
     a: date => date.hour < 12 ? 'am' : 'pm',
+
+    // day of week, zero padded
+    ee: (date, fmt) => padLeft(fmt.format(date, 'e'), 2, '0'),
+
+    // day of week
+    e: date => daysOfWeek[date.toDate().getDay()],
+
+    // week of year
+    w: date => {
+        // move to the last day of the week
+        let dt = date.add(DateComponent.Date, 7 - parseInt(date.format('e')))
+
+        // this loop is meant to detect whether the current week contains
+        // Jan 4th. if that is the case we can immediately return 1.
+        // otherwise, our loop variable "dt" will contain the first day of
+        // the week that we started from. that's useful because the first
+        // day of the week may be in a different year than the end of the
+        // week.
+        for (let i = 0; i < 6; ++i) {
+            if (dt.month === 1 && dt.date === 4) {
+                return 1
+            }
+            dt = dt.add(DateComponent.Date, -1)
+        }
+
+        const dateOfFirstWeek = getDateOfFirstWeek(dt.year)
+
+        // 604800 is the number of seconds in a week.
+        const weeks = Math.floor((date.timestamp - dateOfFirstWeek.timestamp) / 604_800)
+
+        return 1 + weeks
+    },
 })
 
 export const phpFormatter: DateFormatterInterface = {
@@ -432,3 +501,8 @@ export const phpToMomentConverter = new ReplacementConverter({
     A: 'A',
     g: 'h',
 })
+
+function getDateOfFirstWeek(year: number): YSDSDate {
+    let dt = new YSDSDate(year, 1, 4)
+    return dt.add(DateComponent.Date, 1 - parseInt(dt.format('e')))
+}
