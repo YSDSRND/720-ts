@@ -16,7 +16,7 @@ export function orderBy<T>(items: ArrayLike<T>, getComparable?: Func1<T, StringL
     })
     const directionMultiplier = !direction || direction === 'asc' ? 1 : -1
     const getStringLike = getComparable || ((item: T) => {
-        return item.toString()
+        return String(item)
     })
     return orderByWithComparator(items, (a, b) => {
         return directionMultiplier * collator.compare(
