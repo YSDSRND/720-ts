@@ -12,14 +12,10 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
     }
 
     for (const key in props) {
-        const value = props[key]
-
-        // we're setting a data property.
-        if (key.indexOf('data-') === 0) {
-            element.dataset[key.substr(5)] = value.toString()
-        } else {
-            element[key] = value!
+        if (!Object.prototype.hasOwnProperty.call(props, key)) {
+            continue
         }
+        element[key] = props[key]!
     }
 
     return element

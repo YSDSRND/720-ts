@@ -13,13 +13,6 @@ describe('createElement tests', () => {
         expect(el.className).toBe('yee')
     })
 
-    it('should set data properties', () => {
-        const el = createElement('div', {
-            'data-a': 'Hello World',
-        } as any)
-        expect(el.dataset.a).toBe('Hello World')
-    })
-
     it('should add child nodes', () => {
         const el = createElement('div', {}, [
             createElement('span'),
