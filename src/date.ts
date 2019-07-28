@@ -97,7 +97,7 @@ export class YSDSDate {
     }
 
     public get timestamp(): number {
-        return this.backend.getTime() / 1_000
+        return Math.floor(this.backend.getTime() / 1_000)
     }
 
     public get timezoneOffset(): number {

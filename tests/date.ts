@@ -320,4 +320,10 @@ describe('unicodeFormatter tests', () => {
         expect(unicodeFormatter.format(new YSDSDate(2000, 1, 1, 13, 0, 0), 'h')).toBe('1')
         expect(unicodeFormatter.format(new YSDSDate(2000, 1, 1, 16, 0, 0), 'h')).toBe('4')
     })
+
+    it('should return an integer timestamp', () => {
+        const ts = YSDSDate.now().timestamp
+
+        expect(parseInt(ts.toString())).toBe(ts)
+    })
 })
