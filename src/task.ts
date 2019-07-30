@@ -8,9 +8,9 @@ type TaskEntry<T> = {
     reject: (err: unknown) => void
 }
 
-export class TaskQueue<T> {
+export class TaskQueue {
     private readonly concurrency: number
-    private readonly queue: Array<TaskEntry<T>>
+    private readonly queue: Array<TaskEntry<unknown>>
     private pending: number
 
     constructor(concurrency: number) {
@@ -20,8 +20,8 @@ export class TaskQueue<T> {
         this.next = this.next.bind(this)
     }
 
-    protected createThenHandler<U>(promise: PromiseLike<T>, fn: Func1<U, void>): Func1<U, void> {
-        return (value: U) => {
+    protected createThenHandler(promise: PromiseLike<unknown>, fn: Func1<unknown, void>): Func1<unknown, void> {
+        return (value: unknown) => {
             this.pending -= 1
             fn(value)
         }
@@ -52,9 +52,13 @@ export class TaskQueue<T> {
         )
     }
 
-    public execute(task: Task<T>): PromiseLike<T> {
+    public execute<T>(task: Task<T>): PromiseLike<T> {
         const promise = new Promise<T>((resolve, reject) => {
-            this.queue.push({task, resolve, reject})
+            this.queue.push({
+                task: task,
+                resolve: resolve as Func1<unknown, void>,
+                reject: reject,
+            })
         })
 
         // the promise will be either resolved or
