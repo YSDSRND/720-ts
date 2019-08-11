@@ -10,7 +10,7 @@ describe('assign tests', () => {
     })
 
     it('should copy from second parameter', () => {
-        const result = assign<any>({a: 'b'}, {c: 'd'})
+        const result = assign({a: 'b'}, {c: 'd'})
         expect(result).toEqual({
             a: 'b',
             c: 'd',
@@ -18,7 +18,7 @@ describe('assign tests', () => {
     })
 
     it('later parameters should override earlier', () => {
-        const result = assign<any>({a: 1}, {a: 2}, {a: 3})
+        const result = assign({a: 1}, {a: 2}, {a: 3})
         expect(result).toEqual({
             a: 3,
         })

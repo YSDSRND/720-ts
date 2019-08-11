@@ -144,7 +144,7 @@ export class NumberFormatter {
     protected readonly parsedFormat: Format
 
     constructor(format: string, options?: Partial<Options>) {
-        this.options = assign<Options>({}, {
+        this.options = assign({}, {
             // sane defaults that apply for the US.
             decimalSeparator: '.',
             thousandsSeparator: ',',

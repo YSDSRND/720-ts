@@ -1,6 +1,5 @@
 import * as React from 'react'
-import {assign} from "../assign";
-import {Func1} from "../types";
+import {Func1} from "../types"
 
 //
 // this component is a wrapper around the <button> element
@@ -99,7 +98,7 @@ export class LoadingButton extends React.Component<Props, State> {
     }
 
     public render() {
-        const p = assign<Props>({}, this.props)
+        const p = {...this.props}
 
         // this button behaves exactly like a normal button
         // but for we don't want these properties to be output

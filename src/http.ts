@@ -139,7 +139,7 @@ export class HttpClient {
 
     public send(request: Request): PromiseLike<Response> {
         const headers = assign({}, request.headers || {}, this.defaultHeaders)
-        const req = assign<Request>({}, request, {
+        const req = assign({}, request, {
             headers: headers,
         })
 
