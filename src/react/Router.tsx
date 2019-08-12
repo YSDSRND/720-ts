@@ -48,7 +48,7 @@ export class Route<TContext> implements RouteLike<TContext> {
         // requirements are supported with the syntax
         // {name:PATTERN}, eg. {name:\\d+}.
         const pattern = this.path
-            .replace(/\{([^\{\}:]+)(?::([^\(\)]+))?\}/g, (match, name, req) => {
+            .replace(/\{([^\{\}\(\):]+)(?::([^\{\}\(\)]+))?\}/g, (match, name, req) => {
                 names.push(name)
                 const requirement = new RegExp(req || '[^\\/]+')
                 return `(${requirement.source})`
