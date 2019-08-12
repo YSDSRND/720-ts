@@ -30,6 +30,7 @@
   "devDependencies": {
     "@types/jasmine": "^3.3.16",
     "@types/react": "^16.8.23",
+    "@types/react-dom": "^16.8.5",
     "jasmine-core": "^3.4.0",
     "karma": "^4.2.0",
     "karma-chrome-launcher": "^3.0.0",
@@ -38,6 +39,7 @@
     "karma-typescript": "^4.1.1",
     "promises-aplus-tests": "^2.1.2",
     "react": "^16.8.6",
+    "react-dom": "^16.9.0",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"
   }
