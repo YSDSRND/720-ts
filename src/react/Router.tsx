@@ -243,7 +243,7 @@ export class Link extends React.Component<LinkProps, { current: string }> {
             [this.props.className || '']: true,
             [this.props.activeClass || 'active']: this.props.activePattern
                 ? this.props.activePattern.test(this.state.current)
-                : false,
+                : this.props.path === this.state.current,
         })
 
         delete p.activeClass

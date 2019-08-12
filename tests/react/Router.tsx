@@ -268,12 +268,26 @@ describe('Link tests', () => {
         expect(element!.querySelector('a')!.classList.contains('active')).toBe(false)
     })
 
-    it('should add active class when matched', () => {
+    it('should add active class when matched with exact path', () => {
         const state = new MockStateProvider('/yee')
 
         ReactDOM.render(
             <Link path="/yee"
-                  activePattern={/^\/yee/}
+                  stateProvider={state}>
+                Hello World
+            </Link>,
+            element!
+        )
+
+        expect(element!.querySelector('a')!.classList.contains('active')).toBe(true)
+    })
+
+    it('should add active class when matched with activePattern', () => {
+        const state = new MockStateProvider('/yee')
+
+        ReactDOM.render(
+            <Link path="/yee"
+                  activePattern={/^\/y/}
                   stateProvider={state}>
                 Hello World
             </Link>,
