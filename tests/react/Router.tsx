@@ -76,6 +76,13 @@ describe('Route tests', () => {
             b: 'hello',
         })
     })
+
+    it('should match slash route', () => {
+        const route = new Route('/', props => null)
+        const match = route.matches('/', new MockStateProvider())
+
+        expect(match).toBeTruthy()
+    })
 })
 
 describe('Router tests', () => {

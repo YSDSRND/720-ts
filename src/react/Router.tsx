@@ -40,6 +40,7 @@ export class Route<TContext> implements RouteLike<TContext> {
 
     private buildPattern(): void {
         const names: Array<string> = []
+        const path = this.path.replace(/\/+$/, '')
 
         // create a regexp from the path supplied to this
         // route. parameter placeholders defined as "{name}"
@@ -47,7 +48,7 @@ export class Route<TContext> implements RouteLike<TContext> {
         // converted into regexp match groups. parameter
         // requirements are supported with the syntax
         // {name:PATTERN}, eg. {name:\\d+}.
-        const pattern = this.path
+        const pattern = path
             .replace(/\{([^\{\}\(\):]+)(?::([^\{\}\(\)]+))?\}/g, (match, name, req) => {
                 names.push(name)
                 const requirement = new RegExp(req || '[^\\/]+')
