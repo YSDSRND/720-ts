@@ -1,6 +1,6 @@
-import {Map, VariadicFunc} from './types'
+import {ReadonlyMap, VariadicFunc} from './types'
 
-type ArgumentMap = Map<any[]>
+type ArgumentMap = ReadonlyMap<unknown[]>
 
 type HandlerMap<T extends ArgumentMap> = {
     [K in keyof T]?: Array<VariadicFunc<T[K], void>>
@@ -34,7 +34,7 @@ export class EventEmitter<T extends ArgumentMap> {
             // currently we can't generically express the
             // length of the argument array in ArgumentMap
             // so we need this ugly cast for the time being.
-            (fn as Function).apply(undefined, args)
+            fn(...args)
         }
     }
 

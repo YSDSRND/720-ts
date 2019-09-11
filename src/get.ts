@@ -6,9 +6,9 @@ export function getPartsOfPath(path: string): ReadonlyArray<string> {
         .split('.')
 }
 
-export function get<T>(item: any, path: string): T | undefined {
+export function get<T>(item: unknown, path: string): T | undefined {
     const parts = getPartsOfPath(path)
-    let slice = item
+    let slice = item as T
 
     for (let i = 0; i < parts.length; ++i) {
         const part = parts[i]
@@ -16,7 +16,7 @@ export function get<T>(item: any, path: string): T | undefined {
         if (!Object.prototype.hasOwnProperty.call(slice, part)) {
             return undefined
         }
-        slice = slice[part]
+        slice = (slice as any)[part]
     }
 
     return slice

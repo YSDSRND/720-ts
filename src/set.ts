@@ -1,6 +1,6 @@
 import {getPartsOfPath} from "./get";
 
-export function set(item: any, path: string, value: any): void {
+export function set(item: unknown, path: string, value: unknown): void {
     const parts = getPartsOfPath(path)
     let slice = item
 
@@ -13,11 +13,11 @@ export function set(item: any, path: string, value: any): void {
         const part = parts[i]
 
         if (!Object.prototype.hasOwnProperty.call(slice, part)) {
-            slice[part] = {}
+            (slice as any)[part] = {}
         }
 
-        slice = slice[part]
+        slice = (slice as any)[part]
     }
 
-    slice[parts[endIndex]] = value
+    (slice as any)[parts[endIndex]] = value
 }

@@ -1,8 +1,8 @@
 import {VariadicFunc} from "./types";
 
-export function throttle<T extends any[]>(func: VariadicFunc<T, any>, wait: number): VariadicFunc<T, void> {
+export function throttle<T extends any[]>(func: VariadicFunc<T, unknown>, wait: number): VariadicFunc<T, void> {
     let timeout: number | undefined
-    return function (this: any, ...args: T) {
+    return function (this: unknown, ...args: T) {
         const context = this
 
         function later() {

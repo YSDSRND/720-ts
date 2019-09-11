@@ -452,7 +452,7 @@ export const unicodeFormatter = new ReplacementFormatter({
         // 604800 is the number of seconds in a week.
         const weeks = Math.floor((date.timestamp - dateOfFirstWeek.timestamp) / 604_800)
 
-        return 1 + weeks
+        return weeks + 1
     },
 })
 

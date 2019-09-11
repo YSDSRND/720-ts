@@ -13,12 +13,22 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "package-lock.json" }}
           - v1-dependencies-
-      - run: npm install
+      - run: npm ci
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package-lock.json" }}
-      - run: ./run_tests_and_report.sh
+      - run: |
+          set -o errexit
+          set -o pipefail
+          set -o nounset
+
+          STATUS=0
+
+          npm run tslint -- --format junit --out "junit/tslint.xml" || STATUS=1
+          npm run test -- --reporters junit || STATUS=1
+
+          exit $STATUS
       - store_test_results:
           path: junit/
       - store_artifacts:

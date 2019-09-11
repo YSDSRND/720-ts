@@ -1,11 +1,11 @@
 import {Promise} from "../src/promise";
 
-export function resolved(value: any) {
+export function resolved(value: unknown) {
     return new Promise((resolve, reject) => {
         resolve(value)
     })
 }
-export function rejected(value: any) {
+export function rejected(value: unknown) {
     return new Promise((resolve, reject) => {
         reject(value)
     })

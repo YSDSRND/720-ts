@@ -7,7 +7,8 @@
     "rules": {
         "array-type": false,
         "arrow-parens": false,
-        "ban-types": false,
+        "binary-comparison-type": true,
+        "binary-expression-operand-order": true,
         "callable-types": false,
         "comment-format": false,
         "forin": false,
@@ -17,6 +18,7 @@
         "max-classes-per-file": false,
         "max-line-length": false,
         "member-ordering": false,
+        "no-any-declaration": true,
         "no-bitwise": false,
         "no-conditional-assignment": false,
         "no-console": [true, "log"],
@@ -53,5 +55,7 @@
         "triple-equals": false,
         "variable-name": [true, "check-format", "allow-pascal-case"]
     },
-    "rulesDirectory": []
+    "rulesDirectory": [
+        "node_modules/ysds-tslint/dist"
+    ]
 }

@@ -5,7 +5,7 @@ export function debounce<T extends any[], U>(func: VariadicFunc<T, U | PromiseLi
     let timeout: number | undefined
     let resolveFns: Array<Func1<U, void>> = []
 
-    return function (this: any, ...args: T) {
+    return function (this: unknown, ...args: T) {
         const context = this
 
         function later() {

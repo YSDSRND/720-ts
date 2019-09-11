@@ -2,10 +2,10 @@ import {Func, Func1} from "./types";
 
 type Handler<T, U> = Func1<T, U | PromiseLike<U>>
 type Initializer<T> = {
-    (fulfill: Func1<T, void>, reject: Func1<any, void>): void
+    (fulfill: Func1<T, void>, reject: Func1<unknown, void>): void
 }
 type ThenFunction<T> = {
-    (onFulfill: Handler<T, void>, onReject: Handler<any, void>): void
+    (onFulfill: Handler<T, void>, onReject: Handler<unknown, void>): void
 }
 
 const enum State {
@@ -18,23 +18,23 @@ function nextTick(func: Func<void>) {
     window.setTimeout(func, 0)
 }
 
-export function isPromiseLike(maybePromise: any): maybePromise is PromiseLike<any> {
-    return typeof maybePromise !== 'undefined' && typeof maybePromise.then === 'function'
+export function isPromiseLike(maybePromise: unknown | PromiseLike<unknown>): maybePromise is PromiseLike<unknown> {
+    return typeof maybePromise !== 'undefined' && typeof (maybePromise as PromiseLike<unknown>).then === 'function'
 }
 
 // minimal A+ compliant promise implementation.
 // loosely based on https://github.com/William17/taxi.
 export class Promise<T> implements PromiseLike<T> {
 
-    protected onFulfills: Array<Handler<T, any>>
-    protected onRejects: Array<Handler<any, any>>
+    protected onFulfills: Array<Handler<T, unknown>>
+    protected onRejects: Array<Handler<unknown, unknown>>
     protected state: State
-    protected value: any
+    protected value: unknown
     protected didHandleRejection: boolean = false
 
-    public unhandledRejectionHandler: Func1<any, void> = Promise.defaultUnhandledRejectionHandler
+    public unhandledRejectionHandler: Func1<unknown, void> = Promise.defaultUnhandledRejectionHandler
 
-    public static defaultUnhandledRejectionHandler: Func1<any, void> = (err) => {
+    public static defaultUnhandledRejectionHandler: Func1<unknown, void> = (err) => {
         console.error('Possibly unhandled promise rejection: ', err)
     }
 
@@ -50,7 +50,7 @@ export class Promise<T> implements PromiseLike<T> {
         }
     }
 
-    protected settle(state: State, value: any): void {
+    protected settle(state: State, value: T | unknown): void {
         if (this.state != State.Pending) {
             return
         }
@@ -67,7 +67,7 @@ export class Promise<T> implements PromiseLike<T> {
             }
 
             for (const fn of handlers) {
-                fn(value)
+                fn(value as T)
             }
 
             this.onFulfills = []
@@ -79,11 +79,11 @@ export class Promise<T> implements PromiseLike<T> {
         this.settle(State.Fulfilled, value)
     }
 
-    protected reject(value: any): void {
+    protected reject(value: unknown): void {
         this.settle(State.Rejected, value)
     }
 
-    protected addDoneHandler(onFulfill: Handler<T, any>, onReject: Handler<any, any>): void {
+    protected addDoneHandler(onFulfill: Handler<T, unknown>, onReject: Handler<unknown, unknown>): void {
         if (this.state == State.Pending) {
             this.onFulfills.push(onFulfill)
             this.onRejects.push(onReject)
@@ -92,15 +92,15 @@ export class Promise<T> implements PromiseLike<T> {
 
         nextTick(() => {
             if (this.state == State.Fulfilled) {
-                onFulfill(this.value)
+                onFulfill(this.value as T)
                 return
             }
             onReject(this.value)
         })
     }
 
-    protected createDoneHandler<U>(other: Promise<U>, handler: any, method: 'fulfill' | 'reject') {
-        return (result: any) => {
+    protected createDoneHandler<U>(other: Promise<U>, handler: unknown, method: 'fulfill' | 'reject') {
+        return (result: unknown) => {
             if (typeof handler === 'function') {
                 try {
                     // 2.2.7.1
@@ -126,11 +126,11 @@ export class Promise<T> implements PromiseLike<T> {
             // 2.2.7.4
             // If onRejected is not a function and promise1 is rejected,
             // promise2 must be rejected with the same reason as promise1.
-            other[method](result)
+            other[method](result as U)
         }
     }
 
-    public then<U, UErr>(onFulfill?: Handler<T, U>, onReject?: Handler<any, UErr>): PromiseLike<U | UErr> {
+    public then<U, UErr>(onFulfill?: Handler<T, U>, onReject?: Handler<unknown, UErr>): PromiseLike<U | UErr> {
         // 2.2.7
         // then must return a promise
         const promise = new Promise<T | U | UErr>()
@@ -158,7 +158,7 @@ export class Promise<T> implements PromiseLike<T> {
     // 2.3
     // The Promise Resolution Procedure
     // [[Resolve]](promise, x)
-    protected static executeResolutionProcedure<T>(promise: Promise<T>, value: any) {
+    protected static executeResolutionProcedure<T>(promise: Promise<T>, value: T | PromiseLike<T>) {
         // 2.3.1
         // If promise and x refer to the same object,
         // reject promise with a TypeError as the reason.
@@ -175,13 +175,13 @@ export class Promise<T> implements PromiseLike<T> {
             // If both resolvePromise and rejectPromise are called,
             // or multiple calls to the same argument are made,
             // the first call takes precedence,
-            // and any further calls are ignored.
+            // and unknown further calls are ignored.
             let called = false
 
             try {
                 // 2.3.3.1
                 // Let then be x.then.
-                const then: ThenFunction<T> = value.then
+                const then: ThenFunction<T> = (value as PromiseLike<T>).then
 
                 if (typeof then === 'function') {
                     // 2.3.3.3
@@ -197,7 +197,7 @@ export class Promise<T> implements PromiseLike<T> {
                             called = true
                             Promise.executeResolutionProcedure(promise, y)
                         }
-                    }, (reason: any) => {
+                    }, (reason: unknown) => {
                         // 2.3.3.3.2
                         // If/when rejectPromise is called with a reason r,
                         // reject promise with r.
@@ -213,7 +213,7 @@ export class Promise<T> implements PromiseLike<T> {
                 // 2.3.3.4
                 // If then is not a function,
                 // fulfill promise with x.
-                promise.fulfill(value)
+                promise.fulfill(value as T)
             } catch (e) {
                 // 2.3.3.2
                 // If retrieving the property x.then results in a thrown exception e,
@@ -230,7 +230,7 @@ export class Promise<T> implements PromiseLike<T> {
         // 2.3.4
         // If x is not an object or function,
         // fulfill promise with x.
-        promise.fulfill(value)
+        promise.fulfill(value as T)
     }
 
     public static resolve<T>(maybePromise: T | PromiseLike<T>): PromiseLike<T> {
@@ -242,7 +242,7 @@ export class Promise<T> implements PromiseLike<T> {
         })
     }
 
-    public static reject<T>(reason: any): PromiseLike<T> {
+    public static reject<T>(reason: unknown): PromiseLike<T> {
         return new Promise((resolve, reject) => {
             reject(reason)
         })
@@ -274,9 +274,9 @@ export class Promise<T> implements PromiseLike<T> {
 
     public static all<T>(promises: ReadonlyArray<PromiseLike<T>>): PromiseLike<ReadonlyArray<T>>;
 
-    public static all(promises: ReadonlyArray<PromiseLike<any>>): PromiseLike<ReadonlyArray<any>> {
+    public static all(promises: ReadonlyArray<PromiseLike<unknown>>): PromiseLike<ReadonlyArray<unknown>> {
         return new Promise((resolve, reject) => {
-            const results: Array<any> = []
+            const results: Array<unknown> = []
             let ok = 0
 
             for (let i = 0; i < promises.length; ++i) {

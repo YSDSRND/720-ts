@@ -5,11 +5,10 @@
   "main": "",
   "scripts": {
     "start": "tsc --watch --noEmit",
-    "test": "karma start --single-run",
-    "test-junit": "karma start --single-run --reporters junit",
+    "test": "karma start",
     "promise-tests": "",
-    "tslint": "tslint --format verbose \"{src,tests}/**/*.{ts,tsx}\"",
-    "tslint-fix": "tslint --fix \"{src,tests}/**/*.{ts,tsx}\""
+    "tslint": "tslint --project \"tsconfig.json\" --format verbose \"{src,tests}/**/*.{ts,tsx}\"",
+    "tslint-fix": "tslint --project \"tsconfig.json\" --fix \"{src,tests}/**/*.{ts,tsx}\""
   },
   "contributors": [
     {
@@ -28,19 +27,20 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "@types/jasmine": "^3.3.16",
-    "@types/react": "^16.8.23",
-    "@types/react-dom": "^16.8.5",
+    "@types/jasmine": "^3.4.0",
+    "@types/react": "^16.9.2",
+    "@types/react-dom": "^16.9.0",
     "jasmine-core": "^3.4.0",
-    "karma": "^4.2.0",
-    "karma-chrome-launcher": "^3.0.0",
+    "karma": "^4.3.0",
+    "karma-chrome-launcher": "^3.1.0",
     "karma-jasmine": "^2.0.1",
     "karma-junit-reporter": "^1.2.0",
     "karma-typescript": "^4.1.1",
     "promises-aplus-tests": "^2.1.2",
-    "react": "^16.8.6",
+    "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3",
+    "ysds-tslint": "git+https://github.com/YSDSRND/tslint.git#02d0495243ce79b17b92e6ace0f7d216ce0fcd58"
   }
 }

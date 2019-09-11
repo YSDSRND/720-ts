@@ -9,14 +9,14 @@ export interface Request {
     url: string
     headers?: Map<StringLike>
     query?: Map<StringLike | ReadonlyArray<StringLike>>
-    body?: any
+    body?: unknown
     responseType?: XMLHttpRequestResponseType
 }
 
 export interface Response {
     status: number
     headers: Map<string>
-    body: any
+    body: unknown
 }
 
 export interface Backend {
@@ -75,7 +75,7 @@ export class XMLHttpRequestBackend implements Backend {
         return headers
     }
 
-    protected attachHandlers(request: XMLHttpRequest, resolve: Func1<Response, void>, reject: Func1<any, void>) {
+    protected attachHandlers(request: XMLHttpRequest, resolve: Func1<Response, void>, reject: Func1<unknown, void>) {
         request.onload = e => {
             const res: Response = {
                 status: request.status,
@@ -105,7 +105,7 @@ export class XMLHttpRequestBackend implements Backend {
                 req.setRequestHeader(key, request.headers![key].toString())
             })
 
-            req.send(request.body)
+            req.send(request.body as any)
         })
     }
 

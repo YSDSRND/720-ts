@@ -2,8 +2,8 @@ import {Promise} from "../src/promise";
 import {Func1} from "../src/types";
 
 describe('promise tests', () => {
-    let originalRejectionHandler: Func1<any, void>
-    let unhandledRejection: any
+    let originalRejectionHandler: Func1<unknown, void>
+    let unhandledRejection: unknown
 
     beforeAll(() => {
         originalRejectionHandler = Promise.defaultUnhandledRejectionHandler
@@ -137,7 +137,7 @@ describe('promise tests', () => {
         })
 
         setTimeout(() => {
-            expect(unhandledRejection.message).toBe('YEE')
+            expect((unhandledRejection as any).message).toBe('YEE')
             done()
         }, 100)
     })
