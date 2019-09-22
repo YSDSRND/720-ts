@@ -15,10 +15,10 @@ interface State {
 }
 
 export class LoadingFileButton extends React.Component<Props, State> {
-
     // "isMounted" is already used by React but we
     // can't access it from here apparently.
     private isComponentMounted: boolean = false
+    private readonly inputRef = React.createRef<HTMLInputElement>()
 
     constructor(props: Props, context: {}) {
         super(props, context)
@@ -49,6 +49,16 @@ export class LoadingFileButton extends React.Component<Props, State> {
             const arrayed = toArray(files)
             this.props.upload(arrayed).then(this.done, this.done)
         }
+
+        // this is a weird hack to reset the file list that
+        // the input field caches when you select a file.
+        // cross browser compatibility is not great on older
+        // browsers because it seems file inputs were not
+        // designed to be used by asynchronous code in the
+        // first place.
+        //
+        // https://stackoverflow.com/questions/20549241/how-to-reset-input-type-file
+        this.inputRef.current!.value = ''
     }
 
     public componentDidMount(): void {
@@ -73,11 +83,13 @@ export class LoadingFileButton extends React.Component<Props, State> {
                 ? <span>&nbsp;<i className={this.props.iconClass || 'fa fa-cog fa-spin'}/></span>
                 : null}
             <input
+                ref={this.inputRef}
                 type="file"
                 onChange={this.onChange}
                 hidden={true}
                 multiple={this.props.multiple === true}
-                disabled={isDisabled}/>
+                disabled={isDisabled}
+                value={''} />
         </label>
     }
 }
