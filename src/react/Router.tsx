@@ -152,7 +152,7 @@ export class Router<TContext> extends React.Component<RouterProps<TContext>, Rou
         this.props.stateProvider.events.subscribe('change', this.onChange)
     }
 
-    public componentWillMount(): void {
+    public UNSAFE_componentWillMount(): void {
         this.props.stateProvider.events.unsubscribe('change', this.onChange)
     }
 

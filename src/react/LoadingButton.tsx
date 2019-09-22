@@ -86,11 +86,11 @@ export class LoadingButton extends React.Component<Props, State> {
         }
     }
 
-    public componentWillUnmount(): void {
+    public UNSAFE_componentWillMount(): void {
         this.isComponentMounted = false
     }
 
-    public componentWillReceiveProps(nextProps: Props): void {
+    public UNSAFE_componentWillReceiveProps(nextProps: Props): void {
         if (nextProps.promise) {
             this.setState({ loading: true })
             nextProps.promise.then(this.done, this.done)
