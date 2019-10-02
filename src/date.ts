@@ -186,6 +186,56 @@ export class YSDSDate {
     public format(format: string): string {
         return unicodeFormatter.format(this, format)
     }
+
+    public diff(other: YSDSDate): YSDSDateDiff {
+        return new YSDSDateDiff(this, other)
+    }
+}
+
+export class YSDSDateDiff {
+    public readonly now: YSDSDate
+    public readonly comparison: YSDSDate
+    public readonly delta: number
+    public get weeks(): number {
+        return Math.floor(Math.abs(this.delta) / 604_800)
+    }
+    public get days(): number {
+        return Math.floor((Math.abs(this.delta) / 86_400) % 7)
+    }
+    public get hours(): number {
+        return Math.floor((Math.abs(this.delta) / 3_600) % 24)
+    }
+    public get minutes(): number {
+        return Math.floor((Math.abs(this.delta) / 60) % 60)
+    }
+    public get isFuture(): boolean {
+        return this.delta < 0
+    }
+
+    constructor(now: YSDSDate, comparison: YSDSDate) {
+        this.now = now
+        this.comparison = comparison
+        this.delta = this.now.timestamp - this.comparison.timestamp
+    }
+
+    public toString(): string {
+        // if the delta is negative "b"
+        // is somewhere in the future.
+        const prefix = this.isFuture ? 'In ' : ''
+        const suffix = this.isFuture ? '' : ' ago'
+
+        const components: ReadonlyArray<[string, number]> = [
+            ['w', this.weeks],
+            ['d', this.days],
+            ['h', this.hours],
+            ['min', this.minutes],
+        ]
+
+        return prefix + components
+            .filter(([name, value]) => value > 0)
+            .map(([name, value]) => `${value}${name}`)
+            .join(' ') + suffix
+    }
 }
 
 // an implementation of DateFormatterInterface that formats

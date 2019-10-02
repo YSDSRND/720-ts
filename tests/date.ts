@@ -327,3 +327,41 @@ describe('unicodeFormatter tests', () => {
         expect(parseInt(ts.toString())).toBe(ts)
     })
 })
+
+describe('YSDSDateDiff tests', () => {
+    const cases: ReadonlyArray<[YSDSDate, YSDSDate, boolean, number, number, number, number]> = [
+        [new YSDSDate(2019, 1, 1, 0), new YSDSDate(2019, 1, 1, 1), true, 0, 0, 1, 0],
+        [new YSDSDate(2019, 1, 1, 1), new YSDSDate(2019, 1, 1, 0), false, 0, 0, 1, 0],
+        [new YSDSDate(2019, 1, 2, 1), new YSDSDate(2019, 1, 1, 0), false, 0, 1, 1, 0],
+        [new YSDSDate(2019, 1, 2, 5, 2), new YSDSDate(2019, 1, 1, 0, 0, 0), false, 0, 1, 5, 2],
+        [new YSDSDate(2019, 1, 8), new YSDSDate(2019, 1, 1), false, 1, 0, 0, 0],
+    ]
+
+    for (let i = 0; i < cases.length; ++i) {
+        it(`should diff correctly ${i}`, () => {
+            const test = cases[i]
+            const diff = test[0].diff(test[1])
+
+            expect(diff.isFuture).toBe(test[2])
+            expect(diff.weeks).toBe(test[3])
+            expect(diff.days).toBe(test[4])
+            expect(diff.hours).toBe(test[5])
+            expect(diff.minutes).toBe(test[6])
+        })
+    }
+
+    it('should stringify correctly', () => {
+        const a = new YSDSDate(2019, 1, 16, 3, 2, 1)
+        const b = new YSDSDate(2019, 1, 1, 0, 0, 0)
+
+        expect(a.diff(b).toString()).toBe('2w 1d 3h 2min ago')
+        expect(b.diff(a).toString()).toBe('In 2w 1d 3h 2min')
+    })
+
+    it('should skip empty parts when stringifying', () => {
+        const a = new YSDSDate(2019, 1, 15, 0, 2, 0)
+        const b = new YSDSDate(2019, 1, 1, 0, 0, 0)
+
+        expect(a.diff(b).toString()).toBe('2w 2min ago')
+    })
+})
