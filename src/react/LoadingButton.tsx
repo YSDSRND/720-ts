@@ -86,7 +86,7 @@ export class LoadingButton extends React.Component<Props, State> {
         }
     }
 
-    public UNSAFE_componentWillMount(): void {
+    public componentWillUnmount(): void {
         this.isComponentMounted = false
     }
 
