@@ -1,3 +1,5 @@
+import {StringLike} from "./types"
+
 export function objectContains(object: object, needle: string): boolean {
     needle = needle.toLowerCase()
 
@@ -6,7 +8,7 @@ export function objectContains(object: object, needle: string): boolean {
 
     while (typeof (part = stack.shift()) !== 'undefined') {
         for (const key of Object.keys(part)) {
-            const value = (part as any)[key]
+            const value: unknown = (part as any)[key]
 
             if (value === null) {
                 continue
@@ -17,11 +19,11 @@ export function objectContains(object: object, needle: string): boolean {
                 case 'function':
                     continue
                 case 'object':
-                    stack.push(value)
+                    stack.push(value!)
                     continue
             }
 
-            if (value.toString().toLowerCase().indexOf(needle) !== -1) {
+            if ((value as StringLike).toString().toLowerCase().indexOf(needle) !== -1) {
                 return true
             }
         }
