@@ -7,8 +7,6 @@ jobs:
       only:
         - master
         - ci
-    environment:
-      NODE_OPTIONS: "--max-old-space-size=4096"
     steps:
       - checkout
       - restore_cache:
@@ -25,6 +23,7 @@ jobs:
           set -o pipefail
           set -o nounset
 
+          export NODE_OPTIONS="--max-old-space-size=4096"
           STATUS=0
 
           npm run tslint -- --format junit --out "junit/tslint.xml" || STATUS=1
