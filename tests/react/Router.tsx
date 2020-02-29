@@ -113,7 +113,7 @@ describe('Router tests', () => {
             />, element!
         )
 
-        expect(document.body.innerText).toBe('Match')
+        expect(document.body.textContent).toBe('Match')
     })
 
     it('should render first matched route', () => {
@@ -136,7 +136,7 @@ describe('Router tests', () => {
             />, element!
         )
 
-        expect(document.body.innerText).toBe('Match')
+        expect(document.body.textContent).toBe('Match')
     })
 
     it('should provide params to component', () => {
@@ -154,7 +154,7 @@ describe('Router tests', () => {
             />, element!
         )
 
-        expect(document.body.innerText).toBe('BOI')
+        expect(document.body.textContent).toBe('BOI')
     })
 
     it('should provide context to component', () => {
@@ -172,7 +172,7 @@ describe('Router tests', () => {
             />, element!
         )
 
-        expect(document.body.innerText).toBe('Hello')
+        expect(document.body.textContent).toBe('Hello')
     })
 
     it('should react to state changes', () => {
@@ -196,9 +196,9 @@ describe('Router tests', () => {
             />, element!
         )
 
-        expect(document.body.innerText).toBe('a')
+        expect(document.body.textContent).toBe('a')
         state.push('/b')
-        expect(document.body.innerText).toBe('b')
+        expect(document.body.textContent).toBe('b')
     })
 
     it('should render nothing with no matching routes', () => {
@@ -215,7 +215,7 @@ describe('Router tests', () => {
                 stateProvider={new MockStateProvider('/b')}
             />, element!
         )
-        expect(document.body.innerText).toBe('')
+        expect(document.body.textContent).toBe('')
     })
 })
 

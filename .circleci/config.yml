@@ -26,7 +26,7 @@ jobs:
           STATUS=0
 
           npm run tslint -- --format junit --out "junit/tslint.xml" || STATUS=1
-          npm run test -- --reporters junit || STATUS=1
+          npm run test -- --no-cache --reporters=jest-junit --reporters=default || STATUS=1
 
           exit $STATUS
       - store_test_results:

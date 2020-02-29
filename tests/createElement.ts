@@ -27,7 +27,7 @@ describe('createElement tests', () => {
         ])
         expect(el.childNodes.length).toBe(1)
         expect(el.childNodes[0].nodeName).toBe('#text')
-        expect(el.innerText).toBe('Wowee')
+        expect(el.textContent).toBe('Wowee')
     })
 
     it('should append children before setting props', () => {

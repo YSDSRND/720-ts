@@ -24,3 +24,9 @@ export function deferred() {
         reject: b,
     }
 }
+
+describe('promise-adapter', () => {
+    it('should do nothing', () => {
+        expect(true).toBe(true)
+    })
+})
