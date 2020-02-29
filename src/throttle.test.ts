@@ -2,6 +2,8 @@ import {throttle} from "../src/throttle";
 
 describe('throttle tests', () => {
 
+    jest.setTimeout(10000)
+
     let calls: number = 0
 
     beforeEach(() => {
@@ -10,7 +12,7 @@ describe('throttle tests', () => {
 
     const fn = throttle(() => {
         return ++calls
-    }, 100)
+    }, 500)
 
     it('should call function once if called repeatedly', (done) => {
         fn()
@@ -20,7 +22,7 @@ describe('throttle tests', () => {
         setTimeout(() => {
             expect(calls).toBe(1)
             done()
-        }, 120)
+        }, 600)
     })
 
     // this test highlights the difference between debounce & throttle.
@@ -33,12 +35,12 @@ describe('throttle tests', () => {
 
         setTimeout(() => {
             fn()
-        }, 80)
+        }, 300)
 
         setTimeout(() => {
             expect(calls).toBe(1)
             done()
-        }, 120)
+        }, 600)
     })
 
     it('should call the function multiple times if the threshold is passed', (done) => {
@@ -46,13 +48,13 @@ describe('throttle tests', () => {
         fn() // this call will be ignored
 
         setTimeout(() => {
-            fn() // this will be executed after 220ms
-        }, 120)
+            fn() // this will be executed after 1100ms
+        }, 600)
 
         setTimeout(() => {
             expect(calls).toBe(2)
             done()
-        }, 300)
+        }, 1500)
     })
 
 })

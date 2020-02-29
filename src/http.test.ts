@@ -63,6 +63,8 @@ describe('HttpClient tests', () => {
 
 describe('XMLHttpRequestBackend tests', () => {
 
+    jest.setTimeout(10000)
+
     let backend: XMLHttpRequestBackend
 
     beforeEach(() => {
@@ -73,6 +75,9 @@ describe('XMLHttpRequestBackend tests', () => {
         backend.send({ method: 'GET', url: 'https://enable-cors.org' }).then(res => {
             expect(res.status).toBe(200)
             expect(res.body).toBeTruthy()
+            done()
+        }, (e) => {
+            console.error(e)
             done()
         })
     })
