@@ -48,7 +48,7 @@
     },
     "testEnvironment": "jsdom",
     "testRegex": [
-      "tests/.+\\.tsx?$"
+      ".+\\.test\\.tsx?$"
     ],
     "transform": {
       "\\.tsx?$": "ts-jest"
