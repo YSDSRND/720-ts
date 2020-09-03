@@ -1,0 +1,22 @@
+name: build
+on:
+  - push
+env:
+  NODE_OPTIONS: --max-old-space-size=4096
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          path: ~/.npm
+      - name: Install dependencies
+        run: npm install
+      - name: Lint
+        run: npm run tslint -- --format junit --out "junit/tslint.xml"
+      - name: Test
+        run: npm run test -- --no-cache --reporters=jest-junit --reporters=default
