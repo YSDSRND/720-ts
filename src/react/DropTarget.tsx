@@ -51,9 +51,10 @@ export class DropTarget extends React.Component<Props, {}> {
         delete props.onDrop
 
         return (
-            <div {...props}
-                 onDragOver={this.onDragOver}
-                 onDrop={this.onDrop}>
+            <div
+                {...props}
+                onDragOver={this.onDragOver}
+                onDrop={this.onDrop}>
                 {this.props.children}
             </div>
         )

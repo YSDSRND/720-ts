@@ -6,7 +6,7 @@ type FormElement =
     HTMLSelectElement |
     HTMLTextAreaElement
 
-type FormValue = string | number | boolean
+type FormValue = string | number | boolean
 type ValueGetter = (element: FormElement) => FormValue
 
 export const defaultValueGetter: ValueGetter = element => {
@@ -20,7 +20,7 @@ export const defaultValueGetter: ValueGetter = element => {
 // name=hello    <-- string
 // name=hello[]  <-- array
 // name=hello[0] <-- array
-const namePattern = /([^\[\]]+)(?:\[([^\[\]]*)\])?$/
+const namePattern = /([^[\]]+)(?:\[([^[\]]*)\])?$/
 
 interface WriteArrayLike<T> {
     length: number

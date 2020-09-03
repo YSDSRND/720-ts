@@ -17,6 +17,6 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Lint
-        run: npm run tslint -- --format junit --out "junit/tslint.xml"
+        run: npm run lint
       - name: Test
         run: npm run test -- --no-cache --reporters=jest-junit --reporters=default

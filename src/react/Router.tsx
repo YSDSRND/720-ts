@@ -49,7 +49,7 @@ export class Route<TContext> implements RouteLike<TContext> {
         // requirements are supported with the syntax
         // {name:PATTERN}, eg. {name:\\d+}.
         const pattern = path
-            .replace(/\{([^\{\}\(\):]+)(?::([^\{\}\(\)]+))?\}/g, (match, name, req) => {
+            .replace(/{([^{}():]+)(?::([^{}()]+))?\}/g, (match, name, req) => {
                 names.push(name)
                 const requirement = new RegExp(req || '[^\\/]+')
                 return `(${requirement.source})`
@@ -256,14 +256,15 @@ export class Link extends React.Component<LinkProps, { current: string }> {
         delete p.stateProvider
 
         return (
-            <a href={this.props.path}
-               className={clazz}
-               onClick={event => {
-                   event.preventDefault()
-                   event.stopPropagation()
-                   this.props.stateProvider.push(this.props.path)
-               }}
-               {...p}>{this.props.children}</a>
+            <a
+                href={this.props.path}
+                className={clazz}
+                onClick={event => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    this.props.stateProvider.push(this.props.path)
+                }}
+                {...p}>{this.props.children}</a>
         )
     }
 }

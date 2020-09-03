@@ -172,8 +172,8 @@ export class NumberFormatter {
         // must also output padding if that is specified in the
         // format.
         const minimumDigitsToWrite = Math.max(digits.length, specifiers.reduce((carry, item) => {
-            if (typeof item.integerIndex !== 'undefined' ||
-                typeof item.fractionIndex !== 'undefined') {
+            if (typeof item.integerIndex !== 'undefined'
+                || typeof item.fractionIndex !== 'undefined') {
                 return carry + 1
             }
             return carry
@@ -197,13 +197,13 @@ export class NumberFormatter {
                 continue
             }
 
-            let integerIndex = fmt === lastNumericSpecifier ?
-                lastNumericSpecifier.integerIndex :
-                fmt.integerIndex
+            let integerIndex = fmt === lastNumericSpecifier
+                ? lastNumericSpecifier.integerIndex
+                : fmt.integerIndex
 
-            const writeUntilIndex = fmt === lastNumericSpecifier ?
-                minimumDigitsToWrite :
-                digitIndex + 1
+            const writeUntilIndex = fmt === lastNumericSpecifier
+                ? minimumDigitsToWrite
+                : digitIndex + 1
 
             // this inner loop will only execute more than once
             // if we need to output more than a single digit

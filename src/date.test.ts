@@ -2,7 +2,7 @@ import {
     DateComponent,
     ReplacementConverter,
     ReplacementFormatter, unicodeFormatter, unicodeParser,
-    YSDSDate
+    YSDSDate,
 } from "../src/date";
 
 describe('YSDSDate tests', () => {

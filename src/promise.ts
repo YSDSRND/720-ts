@@ -58,9 +58,9 @@ export class Promise<T> implements PromiseLike<T> {
         this.value = value
 
         nextTick(() => {
-            const handlers = state == State.Fulfilled ?
-                this.onFulfills :
-                this.onRejects
+            const handlers = state == State.Fulfilled
+                ? this.onFulfills
+                : this.onRejects
 
             if (state === State.Rejected && !this.didHandleRejection) {
                 this.unhandledRejectionHandler(value)

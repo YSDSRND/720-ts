@@ -265,8 +265,9 @@ describe('Link tests', () => {
         const state = new MockStateProvider('/boi')
 
         ReactDOM.render(
-            <Link path="/yee"
-                  stateProvider={state}>
+            <Link
+                path="/yee"
+                stateProvider={state}>
                 Hello World
             </Link>,
             element!
@@ -279,8 +280,9 @@ describe('Link tests', () => {
         const state = new MockStateProvider('/yee')
 
         ReactDOM.render(
-            <Link path="/yee"
-                  stateProvider={state}>
+            <Link
+                path="/yee"
+                stateProvider={state}>
                 Hello World
             </Link>,
             element!
@@ -293,9 +295,10 @@ describe('Link tests', () => {
         const state = new MockStateProvider('/yee')
 
         ReactDOM.render(
-            <Link path="/yee"
-                  activePattern={/^\/y/}
-                  stateProvider={state}>
+            <Link
+                path="/yee"
+                activePattern={/^\/y/}
+                stateProvider={state}>
                 Hello World
             </Link>,
             element!
@@ -308,10 +311,11 @@ describe('Link tests', () => {
         const state = new MockStateProvider('/yee')
 
         ReactDOM.render(
-            <Link path="/yee/boi"
-                  activeClass="my-class"
-                  activePattern={/^\/yee/}
-                  stateProvider={state}>
+            <Link
+                path="/yee/boi"
+                activeClass="my-class"
+                activePattern={/^\/yee/}
+                stateProvider={state}>
                 Hello World
             </Link>,
             element!

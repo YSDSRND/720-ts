@@ -2,7 +2,7 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
     type: K,
     props: Partial<HTMLElementTagNameMap[K]> = {},
     children: ReadonlyArray<string | Node> = []): HTMLElementTagNameMap[K] {
-    const element = document.createElement(type) as HTMLElementTagNameMap[K]
+    const element = document.createElement(type)
 
     for (const child of children) {
         const node = typeof child === 'string'
