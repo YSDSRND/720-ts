@@ -98,7 +98,7 @@ export class LoadingButton extends React.Component<Props, State> {
     }
 
     public render() {
-        const p = {...this.props}
+        const p: Partial<Props> = {...this.props}
 
         // this button behaves exactly like a normal button
         // but for we don't want these properties to be output

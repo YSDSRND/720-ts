@@ -46,7 +46,7 @@ export class DropTarget extends React.Component<Props, {}> {
     }
 
     public render() {
-        const props = {...this.props}
+        const props: Partial<Props> = {...this.props}
         delete props.dropEffect
         delete props.onDrop
 

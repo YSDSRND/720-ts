@@ -239,7 +239,7 @@ export class Link extends React.Component<LinkProps, { current: string }> {
     }
 
     public render() {
-        const p = assign({}, this.props) as LinkProps
+        const p: Partial<LinkProps> = assign({}, this.props)
         const clazz = classNames({
             [this.props.className || '']: true,
             [this.props.activeClass || 'active']: this.props.activePattern
