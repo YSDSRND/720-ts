@@ -2,8 +2,7 @@ import * as React from 'react'
 import {classNames} from "../classNames"
 import {toArray} from "../toArray"
 
-interface Props {
-    className?: string
+interface Props extends React.LabelHTMLAttributes<HTMLLabelElement> {
     disabled?: boolean
     multiple?: boolean
     iconClass?: string
@@ -70,6 +69,12 @@ export class LoadingFileButton extends React.Component<Props, State> {
     }
 
     public render() {
+        const props: Partial<Props> = {...this.props}
+        delete props.disabled
+        delete props.multiple
+        delete props.iconClass
+        delete props.upload
+
         const isDisabled = this.state.loading || this.props.disabled === true
         const clazz = classNames({
             [this.props.className || '']: true,
@@ -77,7 +82,9 @@ export class LoadingFileButton extends React.Component<Props, State> {
         })
         return <label
             className={clazz}
-            role="button">
+            role="button"
+            {...props}
+        >
             {this.props.children}
             {this.state.loading
                 ? <span>&nbsp;<i className={this.props.iconClass || 'fa fa-cog fa-spin'}/></span>
