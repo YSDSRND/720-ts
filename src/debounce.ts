@@ -1,27 +1,20 @@
-import {VariadicFunc, Func1} from "./types";
-import {Promise} from "./promise";
+import {VariadicFunc} from "./types";
 
-export function debounce<T extends any[], U>(func: VariadicFunc<T, U | PromiseLike<U>>, wait: number): VariadicFunc<T, PromiseLike<U>> {
+export function debounce<T extends any[]>(func: VariadicFunc<T, unknown>, wait: number): VariadicFunc<T, void> {
+    let currentContext: unknown
+    let currentArguments: T
     let timeout: number | undefined
-    let resolveFns: Array<Func1<U, void>> = []
 
-    return function (this: unknown, ...args: T) {
-        const context = this
+    function later(): void {
+        timeout = undefined
+        func.apply(currentContext, currentArguments)
+    }
 
-        function later() {
-            timeout = undefined
-            const result = func.apply(context, args)
-            Promise.resolve(result).then(res => {
-                resolveFns.forEach(fn => fn(res))
-                resolveFns = []
-            })
-        }
+    return function (this: unknown, ...args: T): void {
+        currentContext = this
+        currentArguments = args
 
         window.clearTimeout(timeout)
         timeout = window.setTimeout(later, wait)
-
-        return new Promise(resolve => {
-            resolveFns.push(resolve)
-        })
     }
 }
