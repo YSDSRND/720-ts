@@ -242,6 +242,6 @@ export class NumberFormatter {
             }
         }
 
-        return out
+        return (value < 0 ? '-' : '') + out
     }
 }

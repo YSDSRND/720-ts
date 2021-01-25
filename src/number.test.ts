@@ -31,9 +31,10 @@ describe('NumberFormatter tests', () => {
 
         ['#', 123.50, '124'],
         ['#,##0', +Infinity, '0'],
-        ['#,##0', -Infinity, '0'],
+        ['#,##0', -Infinity, '-0'],
         ['#,##0', Infinity, '0'],
         ['#,##0', NaN, '0'],
+        ['#,##0', -5, '-5'],
     ]
 
     cases.forEach((item, idx) => {
