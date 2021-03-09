@@ -1,4 +1,3 @@
-import {Promise} from "./promise"
 import {Func, Func1} from "./types";
 
 type Task<T> = Func<PromiseLike<T>>

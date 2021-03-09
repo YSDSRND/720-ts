@@ -1,5 +1,4 @@
 import {Func1, Map, StringLike} from "./types";
-import {Promise} from "./promise";
 import {assign} from "./assign";
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'

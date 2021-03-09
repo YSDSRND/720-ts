@@ -1,5 +1,4 @@
 import {TaskQueue} from "../src/task"
-import {Promise} from "../src/promise";
 
 function wait(ms: number): PromiseLike<number> {
     const ts = Date.now()
