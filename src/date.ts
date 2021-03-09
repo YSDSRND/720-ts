@@ -1,4 +1,3 @@
-import {padLeft} from "./pad";
 import {Func2, Map, ReadonlyMap, StringLike} from "./types";
 import {orderByWithComparator} from "./orderBy";
 
@@ -431,31 +430,31 @@ export const unicodeFormatter = new ReplacementFormatter({
     yy: date => date.year.toString().slice(-2),
 
     // month of year, zero padded
-    MM: date => padLeft(date.month.toString(), 2, '0'),
+    MM: date => date.month.toString().padStart(2, '0'),
 
     // month of year
     M: date => date.month,
 
     // date of month, zero padded
-    dd: date => padLeft(date.date.toString(), 2, '0'),
+    dd: date => date.date.toString().padStart(2, '0'),
 
     // date of month
     d: date => date.date,
 
     // hour, 24h, zero padded
-    HH: date => padLeft(date.hour.toString(), 2, '0'),
+    HH: date => date.hour.toString().padStart(2, '0'),
 
     // hour, 12h, zero padded
-    hh: date => padLeft(twelveHourClockHours[date.hour].toString(), 2, '0'),
+    hh: date => twelveHourClockHours[date.hour].toString().padStart(2, '0'),
 
     // hour, 12h
     h: date => twelveHourClockHours[date.hour],
 
     // minute, zero padded
-    mm: date => padLeft(date.minute.toString(), 2, '0'),
+    mm: date => date.minute.toString().padStart(2, '0'),
 
     // second, zero padded
-    ss: date => padLeft(date.second.toString(), 2, '0'),
+    ss: date => date.second.toString().padStart(2, '0'),
 
     // time zone offset, colon separated
     xxx: date => {
@@ -464,9 +463,9 @@ export const unicodeFormatter = new ReplacementFormatter({
         const hours = Math.floor(Math.abs(offset) / 60)
         const minutes = Math.abs(offset) % 60
         return sign +
-            padLeft(hours.toString(), 2, '0') +
+            hours.toString().padStart(2, '0') +
             ':' +
-            padLeft(minutes.toString(), 2, '0')
+            minutes.toString().padStart(2, '0')
     },
 
     // time zone offset, no separator between hour/minutes
@@ -496,7 +495,7 @@ export const unicodeFormatter = new ReplacementFormatter({
     a: date => date.hour < 12 ? 'am' : 'pm',
 
     // day of week, zero padded
-    ee: (date, fmt) => padLeft(fmt.format(date, 'e'), 2, '0'),
+    ee: (date, fmt) => fmt.format(date, 'e').padStart(2, '0'),
 
     // day of week
     e: date => daysOfWeek[date.toDate().getDay()],
