@@ -2,7 +2,6 @@ import * as React from 'react'
 import {toArray} from "../toArray";
 import {Map} from "../types"
 import {EventEmitter} from "../events";
-import {assign} from "../assign";
 import {classNames} from '../classNames'
 
 export interface RouteComponentProps<TContext> {
@@ -239,7 +238,9 @@ export class Link extends React.Component<LinkProps, { current: string }> {
     }
 
     public render() {
-        const p: Partial<LinkProps> = assign({}, this.props)
+        const p: Partial<LinkProps> = {
+            ...this.props,
+        }
         const clazz = classNames({
             [this.props.className || '']: true,
             [this.props.activeClass || 'active']: this.props.activePattern

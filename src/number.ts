@@ -1,4 +1,3 @@
-import {assign} from "./assign";
 import {find} from "./find";
 
 interface Options {
@@ -144,11 +143,12 @@ export class NumberFormatter {
     protected readonly parsedFormat: Format
 
     constructor(format: string, options?: Partial<Options>) {
-        this.options = assign({}, {
+        this.options = {
             // sane defaults that apply for the US.
             decimalSeparator: '.',
             thousandsSeparator: ',',
-        }, options || {})
+            ...options,
+        }
         this.parsedFormat = parseFormat(format, this.options)
     }
 

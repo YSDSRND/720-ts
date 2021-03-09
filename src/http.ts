@@ -1,5 +1,4 @@
 import {Func1, Map, StringLike} from "./types";
-import {assign} from "./assign";
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -200,10 +199,14 @@ export class HttpClient {
     }
 
     public send(request: Request): PromiseLike<Response> {
-        const headers = assign({}, request.headers || {}, this.defaultHeaders)
-        const req = assign({}, request, {
+        const headers =  {
+            ...this.defaultHeaders,
+            ...request.headers,
+        }
+        const req: Request = {
+            ...request,
             headers: headers,
-        })
+        }
 
         return this.backend.send(req).then(res => {
             if (res.status >= 200 && res.status < 400) {
