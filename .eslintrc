@@ -14,7 +14,7 @@
     "ecmaFeatures": {
       "jsx": true
     },
-    "ecmaVersion": 6,
+    "ecmaVersion": 2015,
     "project": "tsconfig.json",
     "sourceType": "module"
   },
@@ -79,12 +79,7 @@
     ],
     "no-case-declarations": "off",
     "no-constant-condition": "off",
-    "no-console": [
-      "error",
-      {
-        "allow": ["error"]
-      }
-    ],
+    "no-console": "error",
     "no-empty": "off",
     "no-prototype-builtins": "off",
     "operator-linebreak": [

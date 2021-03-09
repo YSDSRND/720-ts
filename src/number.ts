@@ -1,5 +1,3 @@
-import {find} from "./find";
-
 interface Options {
     decimalSeparator: string
     thousandsSeparator: string
@@ -184,7 +182,7 @@ export class NumberFormatter {
         // when we output a thousands separator. if we need to
         // output more digits than our format specifies we will
         // use this value as a starting point.
-        const lastNumericSpecifier = find(specifiers, spec => spec.isLastNumericSpecifier || false)
+        const lastNumericSpecifier = specifiers.find(spec => spec.isLastNumericSpecifier || false)
 
         let out = ''
         let digitIndex = 0

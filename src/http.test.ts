@@ -77,7 +77,6 @@ describe('XMLHttpRequestBackend tests', () => {
             expect(res.body).toBeTruthy()
             done()
         }, (e) => {
-            console.error(e)
             done()
         })
     })
