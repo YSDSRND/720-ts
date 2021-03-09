@@ -1,4 +1,4 @@
-import {buildUrl, HttpClient, MockBackend, XMLHttpRequestBackend} from "../src/http"
+import {buildUrl, extractHeaders, HttpClient, MockBackend, XMLHttpRequestBackend} from "../src/http"
 
 describe('HttpClient tests', () => {
 
@@ -113,5 +113,32 @@ describe('buildUrl tests', () => {
         })
 
         expect(url).toBe('http://google.com?yee[]=1&yee[]=2&yee[]=3')
+    })
+})
+
+describe('extractHeader tests', () => {
+    it('should extract stuff', () => {
+        const lines = `
+Accept: application/json
+Content-Type: yee
+        `
+
+        const headers = extractHeaders(lines)
+
+        expect(headers).toEqual({
+            'Accept': 'application/json',
+            'Content-Type': 'yee',
+        })
+    })
+
+    it('should disregard incomplete headers', () => {
+        const lines = `
+A B C
+D: E
+        `
+        const headers = extractHeaders(lines)
+        expect(headers).toEqual({
+            'D': 'E',
+        })
     })
 })

@@ -120,24 +120,29 @@ export function buildUrl(base: string, query: Map<StringLike | ReadonlyArray<Str
     return base + (queryString !== '' ? '?' + queryString : '')
 }
 
-export class XMLHttpRequestBackend implements Backend {
+type HeaderMap = {
+    [key: string]: string
+}
 
-    protected extractHeaders(data: string) {
-        const lines = data.trim().split('\n')
-        const headers: { [key: string]: string } = {}
-        lines.forEach(line => {
-            const [key, value] = line.split(':')
-            headers[key.trim()] = value.trim()
-        })
+export function extractHeaders(data: string): HeaderMap {
+    const pattern = /(\S+)(?:\s*):(?:\s*)(\S+)/gi
+    const out: HeaderMap = {}
+    let match: RegExpMatchArray | null
 
-        return headers
+    while ((match = pattern.exec(data)) !== null) {
+        const key = match[1].trim()
+        out[key] = match[2].trim()
     }
 
+    return out
+}
+
+export class XMLHttpRequestBackend implements Backend {
     protected attachHandlers(request: XMLHttpRequest, resolve: Func1<Response, void>, reject: Func1<unknown, void>) {
         request.onload = e => {
             const res: Response = {
                 status: request.status,
-                headers: this.extractHeaders(request.getAllResponseHeaders()),
+                headers: extractHeaders(request.getAllResponseHeaders()),
                 body: request.response,
             }
             resolve(res)
