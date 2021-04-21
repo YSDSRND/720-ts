@@ -16,10 +16,11 @@ describe('trim tests', () => {
         ['//yee//', '/', 'yee'],
     ]
 
-    for (let i = 0; i < dataSets.length; ++i) {
-        const set = dataSets[i]
+    let i = 0
+    for (const set of dataSets) {
         it('should trim correctly ' + i, () => {
             expect(trim(set[0], set[1])).toBe(set[2])
         })
+        ++i
     }
 })

@@ -12,6 +12,10 @@ export function set(item: unknown, path: string, value: unknown): void {
     for (let i = 0; i < endIndex; ++i) {
         const part = parts[i]
 
+        if (typeof part === 'undefined') {
+            return
+        }
+
         if (!Object.prototype.hasOwnProperty.call(slice, part)) {
             (slice as any)[part] = {}
         }
@@ -19,5 +23,9 @@ export function set(item: unknown, path: string, value: unknown): void {
         slice = (slice as any)[part]
     }
 
-    (slice as any)[parts[endIndex]] = value
+    const lastPart = parts[endIndex];
+
+    if (lastPart) {
+        (slice as any)[lastPart] = value
+    }
 }

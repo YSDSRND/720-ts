@@ -5,7 +5,7 @@ export function parseQuery(value: string): ReadonlyMap<string | undefined> {
     const regex = /([^&?=]+)(?:=([^&?=]+))?/g
     let matches: RegExpMatchArray | null
 
-    while ((matches = regex.exec(value)) !== null) {
+    while ((matches = regex.exec(value)) !== null && matches[1]) {
         out[matches[1]] = decodeURIComponent(matches[2] || '')
     }
 

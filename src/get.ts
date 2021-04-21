@@ -10,9 +10,7 @@ export function get<T>(item: unknown, path: string): T | undefined {
     const parts = getPartsOfPath(path)
     let slice = item as T
 
-    for (let i = 0; i < parts.length; ++i) {
-        const part = parts[i]
-
+    for (const part of parts) {
         if (!Object.prototype.hasOwnProperty.call(slice, part)) {
             return undefined
         }

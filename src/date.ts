@@ -256,7 +256,7 @@ export class ReplacementFormatter implements DateFormatterInterface {
             date = YSDSDate.fromDate(date)
         }
         return format.replace(this.regexp, match => {
-            return this.replacements[match](date as YSDSDate, this).toString()
+            return this.replacements[match]?.(date as YSDSDate, this).toString() ?? ''
         })
     }
 }
@@ -283,7 +283,7 @@ export class ReplacementConverter implements DateFormatConverterInterface {
 
     public convert(from: string): string {
         return from.replace(this.regexp, match => {
-            return this.replacements[match]
+            return this.replacements[match] ?? ''
         })
     }
 }
@@ -313,12 +313,15 @@ export class PatternParser implements DateParserInterface {
             const components: Array<MatchHandler> = []
             const dateRegex = format.replace(new RegExp(formatRegex, 'g'), match => {
                 const p = this.patterns[match]
+                if (!p) {
+                    return ''
+                }
                 components.push(p[1])
                 return `(${p[0]})`
             })
             this.cache[format] = [new RegExp(dateRegex), components]
         }
-        return this.cache[format]
+        return this.cache[format]!
     }
 
     public parse(value: string, format: string): YSDSDate | undefined {
@@ -332,8 +335,14 @@ export class PatternParser implements DateParserInterface {
         let dt = new YSDSDate(0, 1, 1, 0, 0, 0, 0)
 
         for (let i = 1; i < matches.length; i++) {
+            const match = matches[i]
+            if (!match) {
+                continue
+            }
             const component = seq[1][i - 1]
-            dt = component(matches[i], dt)
+            if (component) {
+                dt = component(match, dt)
+            }
         }
 
         return dt
@@ -445,10 +454,10 @@ export const unicodeFormatter = new ReplacementFormatter({
     HH: date => date.hour.toString().padStart(2, '0'),
 
     // hour, 12h, zero padded
-    hh: date => twelveHourClockHours[date.hour].toString().padStart(2, '0'),
+    hh: date => twelveHourClockHours[date.hour]?.toString().padStart(2, '0') ?? '',
 
     // hour, 12h
-    h: date => twelveHourClockHours[date.hour],
+    h: date => twelveHourClockHours[date.hour] ?? '',
 
     // minute, zero padded
     mm: date => date.minute.toString().padStart(2, '0'),
@@ -498,7 +507,7 @@ export const unicodeFormatter = new ReplacementFormatter({
     ee: (date, fmt) => fmt.format(date, 'e').padStart(2, '0'),
 
     // day of week
-    e: date => daysOfWeek[date.toDate().getDay()],
+    e: date => daysOfWeek[date.toDate().getDay()] ?? '',
 
     // week of year
     w: date => {

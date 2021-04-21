@@ -62,8 +62,9 @@ describe('YSDSDate tests', () => {
         [2018, 1, 31, DateComponent.Year, 2, 2020, 1, 31],
     ]
 
-    for (let i = 0; i < dataProvider.length; ++i) {
-        const data = dataProvider[i]
+    let i = 0
+
+    for (const data of dataProvider) {
         it(`should add components correctly ${i}`, () => {
             const dt = new YSDSDate(data[0], data[1], data[2])
             const added = dt.add(data[3], data[4])
@@ -71,6 +72,7 @@ describe('YSDSDate tests', () => {
             expect(added.month).toBe(data[6])
             expect(added.date).toBe(data[7])
         })
+        ++i
     }
 
     [
@@ -301,11 +303,13 @@ describe('unicodeFormatter tests', () => {
         [new YSDSDate(2019, 2, 1), 'w', '5'],
     ]
 
-    for (let i = 0; i < formats.length; ++i) {
-        const fmt = formats[i]
+    let i = 0
+
+    for (const fmt of formats) {
         it(`should format correctly ${i}`, () => {
             expect(unicodeFormatter.format(fmt[0], fmt[1])).toBe(fmt[2])
         })
+        ++i
     }
 
     it('should format timezone correctly', () => {
@@ -337,9 +341,10 @@ describe('YSDSDateDiff tests', () => {
         [new YSDSDate(2019, 1, 8), new YSDSDate(2019, 1, 1), false, 1, 0, 0, 0],
     ]
 
-    for (let i = 0; i < cases.length; ++i) {
+    let i = 0
+
+    for (const test of cases) {
         it(`should diff correctly ${i}`, () => {
-            const test = cases[i]
             const diff = test[0].diff(test[1])
 
             expect(diff.isFuture).toBe(test[2])
@@ -348,6 +353,7 @@ describe('YSDSDateDiff tests', () => {
             expect(diff.hours).toBe(test[5])
             expect(diff.minutes).toBe(test[6])
         })
+        ++i
     }
 
     it('should stringify correctly', () => {

@@ -31,7 +31,7 @@ describe('entries tests', () => {
         }
         const e = entries(names)
 
-        expect(e[0].key).toBe(0)
-        expect(e[1].key).toBe(1)
+        expect(e[0]?.key).toBe(0)
+        expect(e[1]?.key).toBe(1)
     })
 })

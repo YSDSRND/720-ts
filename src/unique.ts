@@ -1,7 +1,6 @@
-export function unique<T>(items: ArrayLike<T>): ReadonlyArray<T> {
+export function unique<T>(items: ReadonlyArray<T>): ReadonlyArray<T> {
     const out: Array<T> = []
-    for (let i = 0; i < items.length; ++i) {
-        const item = items[i]
+    for (const item of items) {
         if (out.indexOf(item) === -1) {
             out.push(item)
         }

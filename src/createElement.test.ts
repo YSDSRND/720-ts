@@ -18,7 +18,7 @@ describe('createElement tests', () => {
             createElement('span'),
         ])
         expect(el.childNodes.length).toBe(1)
-        expect(el.childNodes[0].nodeName).toBe('SPAN')
+        expect(el.childNodes[0]?.nodeName).toBe('SPAN')
     })
 
     it('should add child text nodes', () => {
@@ -26,7 +26,7 @@ describe('createElement tests', () => {
             'Wowee',
         ])
         expect(el.childNodes.length).toBe(1)
-        expect(el.childNodes[0].nodeName).toBe('#text')
+        expect(el.childNodes[0]?.nodeName).toBe('#text')
         expect(el.textContent).toBe('Wowee')
     })
 

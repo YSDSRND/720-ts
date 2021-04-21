@@ -26,19 +26,19 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.22",
     "@types/react": "^17.0.3",
-    "@types/react-dom": "^17.0.2",
-    "@typescript-eslint/eslint-plugin": "^4.17.0",
-    "@typescript-eslint/parser": "^4.17.0",
-    "eslint": "^7.21.0",
-    "eslint-plugin-react": "^7.22.0",
+    "@types/react-dom": "^17.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "eslint": "^7.24.0",
+    "eslint-plugin-react": "^7.23.2",
     "jest": "^26.6.3",
     "jest-junit": "^12.0.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "ts-jest": "^26.5.3",
-    "typescript": "^4.2.3"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "ts-jest": "^26.5.5",
+    "typescript": "^4.2.4"
   },
   "jest": {
     "globals": {

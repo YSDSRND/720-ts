@@ -127,7 +127,7 @@ export function extractHeaders(data: string): HeaderMap {
     const out: HeaderMap = {}
     let match: RegExpMatchArray | null
 
-    while ((match = pattern.exec(data)) !== null) {
+    while ((match = pattern.exec(data)) !== null && match[1] && match[2]) {
         const key = match[1].trim()
         out[key] = match[2].trim()
     }
@@ -163,7 +163,7 @@ export class XMLHttpRequestBackend implements Backend {
             req.responseType = request.responseType || ''
 
             Object.keys(request.headers!).forEach(key => {
-                req.setRequestHeader(key, request.headers![key].toString())
+                req.setRequestHeader(key, request.headers?.[key]?.toString() ?? '')
             })
 
             req.send(request.body as any)
