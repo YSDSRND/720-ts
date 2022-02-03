@@ -3,6 +3,8 @@ import {classNames} from "../classNames"
 import {toArray} from "../toArray"
 
 interface Props extends React.LabelHTMLAttributes<HTMLLabelElement> {
+    /* @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept */
+    accept?: string
     disabled?: boolean
     multiple?: boolean
     iconClass?: string
@@ -74,6 +76,7 @@ export class LoadingFileButton extends React.Component<Props, State> {
         delete props.multiple
         delete props.iconClass
         delete props.upload
+        delete props.accept
 
         const isDisabled = this.state.loading || this.props.disabled === true
         const clazz = classNames({
@@ -90,6 +93,7 @@ export class LoadingFileButton extends React.Component<Props, State> {
                 ? <span>&nbsp;<i className={this.props.iconClass || 'fa fa-cog fa-spin'}/></span>
                 : null}
             <input
+                accept={this.props.accept}
                 ref={this.inputRef}
                 type="file"
                 onChange={this.onChange}
